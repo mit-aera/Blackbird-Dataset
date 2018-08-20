@@ -1,0 +1,17 @@
+unityOffsets:
+    sphinx: [-2.5, 1.0, 0.0]
+    halfMoon: [0.5, 1.5, 0.5]
+    oval: [0.0, 1.0, 0.5]
+    ampersand: [0.5, 1.5, 0.5]
+    dice: [0.0, 0.0, 0.5]
+    bentDice: [0.0,0.25,1.0]
+    thrice: [0.0,0.25,1.0]
+    tiltedThrice: [0.0,0.25,1.25]
+
+    # Trajectories without offsets (yet)
+    winter: []
+    patrick: []
+    clover: []
+    sid: []
+    star: []
+    mouse: []
