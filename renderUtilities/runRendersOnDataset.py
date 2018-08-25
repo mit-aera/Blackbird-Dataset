@@ -6,6 +6,8 @@
 import fire
 import glob2, glob, os, sys, re, yaml, csv, shutil, subprocess
 import numpy as np
+import time
+import threading
 
 import importlib
 from flightgoggles_utils import ImageHandler as FlightGogglesUtils
@@ -19,18 +21,21 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
 
     # Only select folders that we have offsets for
     # print config["unitySettings"]
-    trajectoryFolders = [ traj for traj in config["unitySettings"].keys() if config["unitySettings"][traj] ]
+    trajectoryFolders = [ traj for traj in config["unitySettings"].keys()]
     
-    ############## DEBUG
-    trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter"]
+    ############## DEBUG OVERRIDE
+    #trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter"]
+    trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
+    #trajectoryFolders = ["tiltedThrice","winter"]
+
 
     for trajectoryFolder in trajectoryFolders:
         
         # iterate through trajectory environments
-        for envString in config["unitySettings"][trajectoryFolder].keys():
+        for experiment in config["unitySettings"][trajectoryFolder]:
+
             # Get Trajectory offset
-            envOffsetArray = config["unitySettings"][trajectoryFolder][envString]
-            envOffsetString = ' '.join( str(num) for num in envOffsetArray)
+            envOffsetString = ' '.join( str(num) for num in experiment["offset"])
 
             # Find all '*_poses_centered.csv' files in folder
             trajectoryFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*_poses_centered.csv') )
@@ -43,37 +48,44 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
 
                 print "========================================"
                 print "Starting rendering of: " + trajectoryFile
+
+                # Get final output folder
+                outputFolder = os.path.dirname(trajectoryFile)
                 
                 # Clean up render folder
                 shutil.rmtree(renderFolder,ignore_errors=True)
                 os.makedirs(renderFolder)
 
                 # Run render command
-                command = clientExecutablePath + " '" + envString + "' " + envOffsetString + " '" + trajectoryFile + "'" 
-                print command
+                command = clientExecutablePath + " '" + experiment["environment"] + "' " + envOffsetString + " '" + trajectoryFile + "'" 
+                 
                 process = subprocess.Popen(command, shell=True, stdout=devnull)
                 process.wait()
+		
 
-                # Make videos from renders
-                flightGogglesUtils = FlightGogglesUtils(renderFolder)
-                flightGogglesUtils.createVideo(cameras=cameras)
+                # Make videos from renders (async)
+                def compressAndMoveVideo():
+                    print "Creating video"
+                    flightGogglesUtils = FlightGogglesUtils(renderFolder)                    
+                    flightGogglesUtils.createVideo(cameras=cameras)
 
-                # Get final output folder
-                outputFolder = os.path.dirname(trajectoryFile)
+                    # Move videos to parent directory of CSV
+                    print "Copying movie files."
+                    
+                    # Copy movies out of the image directory
+                    movie_files = glob.glob(os.path.join(renderFolder,"*.mp4"))
+                    for file_ in movie_files:
+                        filename = experiment["name"] + ".mp4"
+                        shutil.copy(file_, os.path.join(outputFolder, filename))
+                    
+                videoThread = threading.Thread(target=compressAndMoveVideo)
+                videoThread.start()
 
-                # Move videos to parent directory of CSV
-                print "Moving movie files out of render directory."
-
-                # Move movies and text files out of the image directory
-                movie_files = glob.glob(os.path.join(renderFolder,"*.mp4"))
-                for file_ in movie_files:
-                    filename = envString + ".mp4"
-                    shutil.copy(file_, os.path.join(outputFolder, filename))
-
-                # Check that number of frames match
+                # Check that number of frames match for all cameras
                 numFrames = []
 
                 # Package camera images
+                print "\nArchiving Images"
                 for camName in cameras:
                     # Clear out camera folder
                     cameraFolder = os.path.join(renderFolder, camName)
@@ -85,18 +97,23 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
                     numFrames.append(len(cameraFiles)) # Log number of images from this camera
                     for file_ in cameraFiles:
                         filename = os.path.basename(file_)
-                        shutil.move(file_, os.path.join(cameraFolder,filename))
+                        shutil.copy(file_, os.path.join(cameraFolder,filename))
 
                     # Tar and cp the files
-                    cameraDestArchive = os.path.join(outputFolder, camName + "_" + envString)
+                    cameraDestArchive = os.path.join(outputFolder, camName + "_" + experiment["name"])
                     shutil.rmtree(cameraDestArchive+'.tar', ignore_errors=True)
                     shutil.make_archive(cameraDestArchive, "tar", cameraFolder)
+                    print "Done archiving images"
 
                 framesMissing = max(numFrames) - min(numFrames)
                 print "Number of frames missing: " + str(framesMissing)
 
-                with open(os.path.join(outputFolder,  "numDroppedFrames_" + envString + ".txt"), 'w') as f:
+                with open(os.path.join(outputFolder,  "numDroppedFrames_" + experiment["name"] + ".txt"), 'w') as f:
                     f.write(str(framesMissing))
+
+                print "Done Archiving Images. Waiting for video compression to finish."
+                # Wait for video compression to finish
+                videoThread.join()
 
 
 

@@ -68,7 +68,6 @@ class ImageHandler(object):
         inputs = ' '.join(" -f concat -safe 0 -r " + str(fps) + " -i " + encoding_path for encoding_path in encoding_paths)
 
         command = "/home/medusa/Downloads/ffmpeg-4.0.2/ffmpeg -y -loglevel fatal " + inputs + " -filter_complex hstack=inputs=" + str(len(cameras)) + " -vcodec hevc_nvenc -preset slow -rc vbr_minqp -qmin 20 -qmax 27 -tier high -pix_fmt yuv420p -r 60 " + path.join(self.image_dir, "video.mp4")
-        print command
         process = subprocess.Popen(command, shell=True)
         process.wait()
         print "Finished video encoding using ffmpeg"
