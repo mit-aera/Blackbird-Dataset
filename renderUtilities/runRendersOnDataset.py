@@ -25,8 +25,8 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
     
     ############## DEBUG OVERRIDE
     #trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter"]
-    trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
-    #trajectoryFolders = ["tiltedThrice","winter"]
+    #trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
+    #trajectoryFolders = ["oval"]
 
 
     for trajectoryFolder in trajectoryFolders:
@@ -40,8 +40,9 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
             # Find all '*_poses_centered.csv' files in folder
             trajectoryFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*_poses_centered.csv') )
 
-            ########### Only run 1m/s flights for testing
-            # trajectoryFiles = [traj for traj in trajectoryFiles if "1p0" in traj]
+            ########### Limit file to 1 trajectory
+            debugTrajectory = "drone_03:00:01_oval_maxSpeed4p0"
+            trajectoryFiles = [traj for traj in trajectoryFiles if debugTrajectory in traj]
 
             # Render these trajectories
             for trajectoryFile in trajectoryFiles:

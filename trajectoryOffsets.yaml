@@ -2,7 +2,7 @@ unitySettings:
     sphinx:
         - name: Ancient_Egyptian_Museum_Room
           environment: Museum_Day
-          offset:      [-1.15, -1.0,     -1.1, 180.0]         # It's VERY tight, but OK for 1m/s
+          offset:      [-1.15, -1.0,     -1.0, 180.0]         # It's VERY tight, but OK for 1m/s
           
     halfMoon:
         - name: Small_Apartment
@@ -15,7 +15,7 @@ unitySettings:
     oval:         
         - name: Small_Apartment
           environment: Butterfly_World
-          offset: [2.15, 1.05,   -0.25, 0.0]              # OK 1m/s
+          offset: [2.2, 1.05,   -0.25, 0.0]              # OK 1m/s
 
         - name: Outdoor_Patio_Night
           environment: Hazelwood_Loft_Full_Night
