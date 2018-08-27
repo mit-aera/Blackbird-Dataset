@@ -2,7 +2,7 @@ unitySettings:
     sphinx:
         - name: Ancient_Egyptian_Museum_Room
           environment: Museum_Day
-          offset:      [-1.15, -1.0,     -1.0, 180.0]         # It's VERY tight, but OK for 1m/s
+          offset:      [-1.15, -1.0,     -1.1, 180.0]         # It's VERY tight, but OK for 1m/s
           
     halfMoon:
         - name: Small_Apartment
@@ -40,22 +40,22 @@ unitySettings:
     dice:
         - name: Ancient_Asian_Museum_Room
           environment: Museum_Day_Small
-          offset: [0.0, 0.0,      -0.10, 45.0]  # OK
+          offset: [0.0, 0.0,      -0.3, 45.0]  # OK
 
     bentDice:
         - name: Ancient_Asian_Museum_Room
           environment: Museum_Day_Small
-          offset: [0.0,0.0,       -0.10, 90.0]  # OK
+          offset: [0.0,0.0,       -0.3, 90.0]  # OK
 
     thrice:
         - name: Ancient_Asian_Museum_Room
           environment: Museum_Day_Small
-          offset: [0.0,0.0,       -0.10,-180.0] # OK
+          offset: [0.0,0.0,       -0.3,-180.0] # OK
 
     tiltedThrice: 
         - name: Ancient_Asian_Museum_Room
           environment: Museum_Day_Small
-          offset: [0.0,0.0,       -0.1,-90.0]  # OK
+          offset: [0.0,0.0,       -0.3,-90.0]  # OK
 
     # Trajectories without offsets (yet)
 
