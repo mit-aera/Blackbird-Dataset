@@ -23,7 +23,7 @@ def runCollisionCheckOnFile(args):
     # Get final output folder
     outputFolder = os.path.dirname(trajectoryFile)
 
-    # Run render command
+    # Run collision check command
     command = executablePath + " --worldFile '" + os.path.join(environmentOBJFolder, experiment["environment"] + ".obj") + "' --x " + str(experiment["offset"][0]) + " --y " + str(experiment["offset"][1]) + " --z " + str(experiment["offset"][2]) + " --yaw " + str(experiment["offset"][3]) + " --poseFile '" + trajectoryFile + "'" 
     
     print command
@@ -64,10 +64,15 @@ def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePa
         # iterate through trajectory environments
         for experiment in config["unitySettings"][trajectoryFolder]:
 
+            
             print "Checking trajectory " + trajectoryFolder + " and experiment " + experiment["name"]
 
             # Find all '*_poses_centered.csv' files in folder
             trajectoryFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*_poses_centered.csv') )
+
+            # Check that this experiment is applicable to this particular subset of logs
+            subsetConstraint = experiment.get("yawDirectionConstraint","")
+            trajectoryFiles = [f for f in trajectoryFiles if subsetConstraint in f]
 
             mapArgs = [(trajectoryFile, experiment, executablePath, environmentOBJFolder) for trajectoryFile in trajectoryFiles]
 

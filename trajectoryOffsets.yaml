@@ -2,7 +2,7 @@ unitySettings:
     sphinx:
         - name: Ancient_Egyptian_Museum_Room
           environment: Museum_Day
-          offset:      [-1.15, -1.0,     -1.0, 180.0]         # It's VERY tight, but OK for 1m/s
+          offset:      [-1.15, -1.0,     -0.9, 180.0]         # It's VERY tight, but OK for 1m/s
           
     halfMoon:
         - name: Small_Apartment
@@ -15,11 +15,11 @@ unitySettings:
     oval:         
         - name: Small_Apartment
           environment: Butterfly_World
-          offset: [2.2, 1.05,   -0.25, 0.0]              # OK 1m/s
+          offset: [2.2, 1.05,   -0.25, 0.0]              # OK 1m/s. No collisions
 
         - name: Outdoor_Patio_Night
           environment: Hazelwood_Loft_Full_Night
-          offset: [3.75, -8.0,          -0.35, 90]        # OK Outside patio night
+          offset: [3.25, -8.0,          -0.55, 90]        # OK Outside patio night. No collisions
 
         - name: Large_Apartment_Day_Near_Kitchen
           environment: Hazelwood_Loft_Full_Day
@@ -30,32 +30,44 @@ unitySettings:
           environment: Butterfly_World
           offset: [0.05, 1.05,   -0.5, 65]                # OK Take off from near majong table    
 
-        - name: Large_Apartment_Night_Near_Couches
-          environment: Hazelwood_Loft_Full_Night
-          offset: [7.35, -3.50,          -0.85, -180.0]   # OK Couch area, tabletop takeoff
+        #- name: Large_Apartment_Night_Near_Couches
+        #  environment: Hazelwood_Loft_Full_Night
+        #  offset: [7.35, -3.25,          -0.95, -180.0]   # OK Couch area, tabletop takeoff. COLLIDES
 
         # Butterfly_World:            [1.3, -2.3,   -1.1, -80.0]    # NOT GREAT Takeoff from marble countertop
         # Hazelwood_Loft_Full_Night:  [-5.45, 1.35,          -5.15, -180.0] # NOT GREAT Top of loft stairs
 
     dice:
-        - name: Ancient_Asian_Museum_Room
+        - name: Ancient_Asian_Museum_Room_YawConstant
           environment: Museum_Day_Small
-          offset: [0.0, 0.0,      -0.3, 45.0]  # OK
+          yawDirectionConstraint: yawConstant
+          offset: [0.0, 0.0,      -0.2, 0.0]  # OK for YawConstant
+
+        - name: Ancient_Asian_Museum_Room_YawForward
+          environment: Museum_Day_Small
+          yawDirectionConstraint: yawForward
+          offset: [0.0, 0.0,      -0.2, 45.0]  # OK for YawForward
 
     bentDice:
-        - name: Ancient_Asian_Museum_Room
+        - name: Ancient_Asian_Museum_Room_YawConstant
           environment: Museum_Day_Small
-          offset: [0.0,0.0,       -0.3, 90.0]  # OK
+          #yawDirectionConstraint: yawConstant
+          offset: [0.0, 0.0,      -0.2, 0.0]  # OK for YawConstant
+
+        #- name: Ancient_Asian_Museum_Room_YawForward
+        #  environment: Museum_Day_Small
+        #  yawDirectionConstraint: yawForward
+        #  offset: [0.0, 0.0,      -0.2, 45.0]  # OK for YawForward
 
     thrice:
         - name: Ancient_Asian_Museum_Room
           environment: Museum_Day_Small
-          offset: [0.0,0.0,       -0.3,-180.0] # OK
+          offset: [0.0,0.0,       -0.2,-180.0] # OK
 
     tiltedThrice: 
         - name: Ancient_Asian_Museum_Room
           environment: Museum_Day_Small
-          offset: [0.0,0.0,       -0.3,-90.0]  # OK
+          offset: [0.0,0.0,       -0.2,-90.0]  # OK
 
     # Trajectories without offsets (yet)
 

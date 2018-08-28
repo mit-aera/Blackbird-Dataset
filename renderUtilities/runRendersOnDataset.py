@@ -25,8 +25,9 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
     
     ############## DEBUG OVERRIDE
     #trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter"]
+    trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand"]
     #trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
-    #trajectoryFolders = ["oval"]
+    # trajectoryFolders = ["oval"]
 
 
     for trajectoryFolder in trajectoryFolders:
@@ -40,9 +41,13 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
             # Find all '*_poses_centered.csv' files in folder
             trajectoryFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*_poses_centered.csv') )
 
+            # Check that this experiment is applicable to this particular subset of logs
+            subsetConstraint = experiment.get("yawDirectionConstraint","")            
+            trajectoryFiles = [f for f in trajectoryFiles if subsetConstraint in f]
+            
             ########### Limit file to 1 trajectory
-            debugTrajectory = "drone_03:00:01_oval_maxSpeed4p0"
-            trajectoryFiles = [traj for traj in trajectoryFiles if debugTrajectory in traj]
+            #debugTrajectory = "drone_16:02:27_dice_maxSpeed3p0"
+            #trajectoryFiles = [traj for traj in trajectoryFiles if debugTrajectory in traj]
 
             # Render these trajectories
             for trajectoryFile in trajectoryFiles:
