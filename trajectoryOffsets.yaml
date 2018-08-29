@@ -49,38 +49,49 @@ unitySettings:
           offset: [ -0.36,   0.21,  -0.2, 45]  #
 
     bentDice:
-        - name: Ancient_Asia_Museum_Room_YawConstant
+        - name: Ancient_Asia_Museum_Room_YawConstant # NO COLLISIONS
           environment: Museum_Day_Small
           yawDirectionConstraint: yawConstant
-          offset: [0.0, 0.0, -0.2, 0.0]  # OK for YawConstant
+          offset: [0.0, 0.0, -0.2, 0.0]  
 
-        - name: Ancient_Asia_Museum_Room_YawForward
+        - name: Ancient_Asia_Museum_Room_YawForward # NO COLLISIONS
           environment: Museum_Day_Small
           yawDirectionConstraint: yawForward
-          offset: [ 0.19,  -0.41,    -0.48,  90.34] #[-0.1, -0.20, -0.2, 0]  # FAILS COLLISION CHECK. 4m/s intersects with something...
+          offset: [ 0.19,  -0.41,    -0.48,  90.34] #[-0.1, -0.20, -0.2, 0]  
 
     thrice:
-        - name: Ancient_Asia_Museum_Room
+        - name: Ancient_Asia_Museum_Room # NO COLLISIONS
           environment: Museum_Day_Small
           offset: [0.21,   -0.29,   -0.35,       -180] # Good on collisions 
 
     tiltedThrice: 
-        - name: Ancient_Asia_Museum_Room_YawConstant
+        - name: Ancient_Asia_Museum_Room_YawConstant # NO COLLISIONS
           environment: Museum_Day_Small
           yawDirectionConstraint: yawConstant
-          offset: [0.58,   0.058,  -0.43,  -90.77]  # Some trajectories collide. Mostly 7m/s yawConstant and a lot of yawForward (which are probably too tall.)
+          offset: [0.58,   0.058,  -0.43,  -90.77]  # 4m/s yawForward rejected because backs into pole.
 
-        - name: Ancient_Asia_Museum_Room_YawForward
+        - name: Ancient_Asia_Museum_Room_YawForward # NO COLLISIONS
           environment: Museum_Day_Small
           yawDirectionConstraint: yawForward
-          offset: [ -0.308,  -0.197,  -0.46,  98.0] #[ -0.30812066,  -0.19708459,  -0.45823485,  98.01003886] # Good via random sample
+          offset: [ -0.308,  -0.197,  -0.46,  98.0] #[ -0.30812066,  -0.19708459,  -0.45823485,  98.01003886] # Via random sample
 
-    # Trajectories without offsets (yet)
-
+    # NYC SUBWAY Trajectories without offsets (yet)
     winter: # Has runs that go too high and too wide.
         - name: NYC_Subway_Station
           environment: NYC_Subway
           offset: [-12.3, -1.5,    -0.15,-0.5] # Might clip a bit. Basically impossible traj.
+
+    mouse:
+        - name: NYC_Subway_Station
+          environment: NYC_Subway
+          offset: [-12.3,-1.5,    -0.15, -0.5]
+
+    picasso:
+        - name: NYC_Subway_Station
+          environment: NYC_Subway
+          offset: [-12.3,-1.5,    -0.15, -0.5]
+
+    # Trajectories without offsets
 
     patrick:
         - name: NYC_Subway_Station
@@ -98,16 +109,7 @@ unitySettings:
           offset: [-12.3,-1.5,    -0.15, -0.5]
 
     star:
-        - name: NYC_Subway_Station
-          environment: NYC_Subway
-          offset: [-12.3,-1.5,    -0.15, -0.5]
-
-    mouse:
-        - name: NYC_Subway_Station
-          environment: NYC_Subway
-          offset: [-12.3,-1.5,    -0.15, -0.5]
-
-    picasso:
-        - name: NYC_Subway_Station
-          environment: NYC_Subway
-          offset: [-12.3,-1.5,    -0.15, -0.5]
+        - name: Ancient_Asia_Museum_Room
+          environment: Museum_Day_Small
+          # yawDirectionConstraint: yawConstant
+          offset: [0.58,   0.058,  -0.43,  -90.77]  
