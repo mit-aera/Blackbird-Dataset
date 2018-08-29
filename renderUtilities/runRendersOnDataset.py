@@ -27,6 +27,7 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
     #trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter"]
     # trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand"]
     #trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
+    trajectoryFolders = ["dice", "bentDice", "thrice", "tiltedThrice"]
     # trajectoryFolders = ["oval"]
 
 
@@ -46,7 +47,7 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
             trajectoryFiles = [f for f in trajectoryFiles if subsetConstraint in f]
             
             ########### Limit file to 1 trajectory
-            debugTrajectory = "tiltedThrice_maxSpeed3p0"
+            debugTrajectory = "yawForward/bentDice_maxSpeed4p0"
             trajectoryFiles = [traj for traj in trajectoryFiles if debugTrajectory in traj]
 
             # Render these trajectories

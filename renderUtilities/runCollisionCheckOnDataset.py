@@ -120,12 +120,12 @@ def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePa
                 continue
 
             # Modify offset to find offset that gives no collisions
-            while (lowestNumCollisions != 0 and iterations < 10000):
+            while (lowestNumCollisions != 0 and iterations < 100):
                 iterations += 1
 
                 # Gaussian for small offset tweaks
-                offset = seedOffset + np.random.randn(4)*np.array((0.25,0.25,0,2.0)) \
-                    + np.random.randn(4)*np.array((0,0,-0.25,0)) \
+                offset = seedOffset + np.random.randn(4)*np.array((0.35,0.35,0,1.75)) \
+                    + np.clip( np.random.randn(4)*np.array((0,0,-0.30,0)), -1e6, -seedOffset[2]) \
                     + np.random.randint(4)*np.array((0,0,0,90)) 
                 
                 #  Uniform distribution for large changes in offset

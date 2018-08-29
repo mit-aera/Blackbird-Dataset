@@ -57,7 +57,7 @@ unitySettings:
         - name: Ancient_Asia_Museum_Room_YawForward
           environment: Museum_Day_Small
           yawDirectionConstraint: yawForward
-          offset: [-0.26,  -0.22,  -0.15,   268.95] #[-0.1, -0.20, -0.2, 0]  # 4m/s intersects with something. Probably statue
+          offset: [ 0.19,  -0.41,    -0.48,  90.34] #[-0.1, -0.20, -0.2, 0]  # FAILS COLLISION CHECK. 4m/s intersects with something...
 
     thrice:
         - name: Ancient_Asia_Museum_Room
@@ -73,7 +73,7 @@ unitySettings:
         - name: Ancient_Asia_Museum_Room_YawForward
           environment: Museum_Day_Small
           yawDirectionConstraint: yawForward
-          offset: [ -0.31,  -0.2,  -0.46,  98.0] #[ -0.30812066,  -0.19708459,  -0.45823485,  98.01003886] # Good via random sample
+          offset: [ -0.308,  -0.197,  -0.46,  98.0] #[ -0.30812066,  -0.19708459,  -0.45823485,  98.01003886] # Good via random sample
 
     # Trajectories without offsets (yet)
 
