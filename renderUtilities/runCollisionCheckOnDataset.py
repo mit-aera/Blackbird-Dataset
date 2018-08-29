@@ -36,9 +36,20 @@ def runCollisionCheckOnFile(args):
     with open(os.path.join(outputFolder,  "numCollisions_" + experiment["name"] + ".txt"), 'w') as f:
         f.write(str(returnCode))
 
-    # List all trajectories that collided
-    if (returnCode):
-        return [trajectoryFile, experiment["name"], returnCode]
+    # List all trajectories
+    # if (returnCode):
+    return [trajectoryFile, experiment["name"], returnCode]
+
+def runParallelCollisionCheckOnFiles(mapArgs):
+
+    pool = Pool()
+    results = pool.map(runCollisionCheckOnFile, mapArgs)
+    pool.close()
+    pool.join()
+    # numCollisions = sum([k for (i,j,k) in results])
+
+    return results
+
 
 def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePath):
     
@@ -52,11 +63,15 @@ def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePa
     
     ############## DEBUG OVERRIDE
     trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice"]
-    #trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
-    # trajectoryFolders = ["winter"]
+    # trajectoryFolders = [ "dice", "bentDice", "thrice", "tiltedThrice"]
+    # trajectoryFolders = [  "thrice", "tiltedThrice"]
+    
+    # trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
+    # trajectoryFolders = ["winter", "clover", "mouse", "patrick","picasso","sid",] # All NYC
+    #trajectoryFolders = ["dice"]
 
     # Keep track of trajectories that collided
-    badTrajectories = []
+    trajectoryResults = []
 
 
     for trajectoryFolder in trajectoryFolders:
@@ -64,25 +79,90 @@ def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePa
         # iterate through trajectory environments
         for experiment in config["unitySettings"][trajectoryFolder]:
 
-            
+            # for subsetConstraint in ["yawForward"]:
+            # for subsetConstraint in ["yawConstant", "yawForward"]:
             print "Checking trajectory " + trajectoryFolder + " and experiment " + experiment["name"]
 
             # Find all '*_poses_centered.csv' files in folder
             trajectoryFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*_poses_centered.csv') )
 
             # Check that this experiment is applicable to this particular subset of logs
-            subsetConstraint = experiment.get("yawDirectionConstraint","")
+            subsetConstraint = ""
+            subsetConstraint = experiment.get("yawDirectionConstraint",subsetConstraint)
             trajectoryFiles = [f for f in trajectoryFiles if subsetConstraint in f]
 
+
+            # Check collisions and re-run collision check with new offset if there are collisions.
+            lowestNumCollisions = 1e10
+            iterations = 0
+            bestOffset = []
+            bestResults = []
+
+            # check number of collisions for normal offset
             mapArgs = [(trajectoryFile, experiment, executablePath, environmentOBJFolder) for trajectoryFile in trajectoryFiles]
+            results = runParallelCollisionCheckOnFiles(mapArgs)
+            # # print results
+
+            # value fewer bad files vs fewer collisions
+            numBadFiles = np.sum([1 for result in results if result[2]>0]) 
+            collisions = np.sum([result[2] for result in results])
+
+            collisionScore = numBadFiles * collisions
+
+            if collisionScore < lowestNumCollisions:
+                lowestNumCollisions = collisionScore
+                bestOffset = experiment["offset"]
+                bestResults = results
+
+            seedOffset = np.array(experiment["offset"])
+
+            if lowestNumCollisions is 0:
+                continue
+
+            # Modify offset to find offset that gives no collisions
+            while (lowestNumCollisions != 0 and iterations < 10000):
+                iterations += 1
+
+                # Gaussian for small offset tweaks
+                offset = seedOffset + np.random.randn(4)*np.array((0.25,0.25,0,2.0)) \
+                    + np.random.randn(4)*np.array((0,0,-0.25,0)) \
+                    + np.random.randint(4)*np.array((0,0,0,90)) 
+                
+                #  Uniform distribution for large changes in offset
+                # offset = seedOffset + (np.random.random(4)-0.5)*np.array((3,3,0,2.5)) \
+                #     + np.random.randn(4)*np.array((0,0,-0.2,0)) \
+                #     + np.random.randint(4)*np.array((0,0,0,90)) 
+                print offset
+                experiment["offset"] = offset
+
+                mapArgs = [(trajectoryFile, experiment, executablePath, environmentOBJFolder) for trajectoryFile in trajectoryFiles]
+                results = runParallelCollisionCheckOnFiles(mapArgs)
+                
+                # value fewer bad files vs fewer collisions
+                numBadFiles = np.sum([1 for result in results if result[2]>0]) 
+                collisions = np.sum([result[2] for result in results])
+
+                collisionScore = numBadFiles * collisions
 
 
-            pool = Pool()
-            results = pool.map(runCollisionCheckOnFile, mapArgs)
-            pool.close()
-            pool.join()
+                if collisionScore < lowestNumCollisions:
+                    lowestNumCollisions = collisionScore
+                    bestOffset = experiment["offset"]
+                    bestResults = results
 
-            badTrajectories += results
+                if collisions == 0:
+                    break
+
+                # print lowestNumCollisions
+                # print bestOffset
+                # for result in bestResults:
+                #     if result:
+                #         print result
+                # print bestResults
+
+                # return
+
+            trajectoryResults.append( (bestResults, bestOffset) ) 
 
             
 
@@ -91,11 +171,17 @@ def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePa
     print "=========================="
     print "Bad trajectories: "
     numBad = 0
-    for element in badTrajectories:
-        if element:
+    numTraj = 0
+
+    # print trajectoryResults
+    for results,offset in trajectoryResults:
+        print "Offset: " + str(offset)
+        for element in results:
+            numTraj += 1
             print element
-            numBad += 1
-    print "Number of bad trajectories: " +  str(numBad) + "/" + str(len(badTrajectories)) 
+            if element[2] != 0:
+                numBad += 1
+    print "Number of bad trajectories: " +  str(numBad) + "/" + str(numTraj) 
 
 
 

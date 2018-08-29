@@ -25,7 +25,7 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
     
     ############## DEBUG OVERRIDE
     #trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter"]
-    trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand"]
+    # trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand"]
     #trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
     # trajectoryFolders = ["oval"]
 
@@ -46,8 +46,8 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
             trajectoryFiles = [f for f in trajectoryFiles if subsetConstraint in f]
             
             ########### Limit file to 1 trajectory
-            #debugTrajectory = "drone_16:02:27_dice_maxSpeed3p0"
-            #trajectoryFiles = [traj for traj in trajectoryFiles if debugTrajectory in traj]
+            debugTrajectory = "tiltedThrice_maxSpeed3p0"
+            trajectoryFiles = [traj for traj in trajectoryFiles if debugTrajectory in traj]
 
             # Render these trajectories
             for trajectoryFile in trajectoryFiles:
