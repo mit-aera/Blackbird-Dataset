@@ -26,18 +26,18 @@ unitySettings:
           offset: [0, -4.0,          -0.35, -90]           # OK kitchen area 
 
     ampersand:
-        - name: Small_Apartment
-          environment: Butterfly_World
-          offset: [0.05, 1.05,   -0.5, 65]                # OK Take off from near majong table    
+        #- name: Small_Apartment
+        #  environment: Butterfly_World
+        #  offset: [0.05, 1.05,   -0.5, 65]                # OK Take off from near majong table    
 
-        #- name: Large_Apartment_Night_Near_Couches
-        #  environment: Hazelwood_Loft_Full_Night
-        #  offset: [7.35, -3.25,          -0.95, -180.0]   # OK Couch area, tabletop takeoff. COLLIDES
+        - name: Large_Apartment_Night_Near_Couches         # OK near couches
+          environment: Hazelwood_Loft_Full_Night
+          offset: [7.35, -3.6,          -1.19, -180.0]
 
         # Butterfly_World:            [1.3, -2.3,   -1.1, -80.0]    # NOT GREAT Takeoff from marble countertop
         # Hazelwood_Loft_Full_Night:  [-5.45, 1.35,          -5.15, -180.0] # NOT GREAT Top of loft stairs
 
-    dice:
+    dice:   # Rendered on 8/29 with no collisions
         - name: Ancient_Asia_Museum_Room_YawConstant
           environment: Museum_Day_Small
           yawDirectionConstraint: yawConstant
@@ -48,7 +48,7 @@ unitySettings:
           yawDirectionConstraint: yawForward
           offset: [ -0.36,   0.21,  -0.2, 45]  #
 
-    bentDice:
+    bentDice:  # Rendered on 8/29 with no collisions
         - name: Ancient_Asia_Museum_Room_YawConstant # NO COLLISIONS
           environment: Museum_Day_Small
           yawDirectionConstraint: yawConstant
@@ -59,12 +59,12 @@ unitySettings:
           yawDirectionConstraint: yawForward
           offset: [ 0.19,  -0.41,    -0.48,  90.34] #[-0.1, -0.20, -0.2, 0]  
 
-    thrice:
+    thrice:  # Rendered on 8/29 with no collisions
         - name: Ancient_Asia_Museum_Room # NO COLLISIONS
           environment: Museum_Day_Small
           offset: [0.21,   -0.29,   -0.35,       -180] # Good on collisions 
 
-    tiltedThrice: 
+    tiltedThrice:  # Rendered on 8/29 with no collisions 
         - name: Ancient_Asia_Museum_Room_YawConstant # NO COLLISIONS
           environment: Museum_Day_Small
           yawDirectionConstraint: yawConstant
@@ -99,17 +99,21 @@ unitySettings:
           offset: [-12.3,-1.5,    -0.15, -0.5]
 
     clover:
-        - name: NYC_Subway_Station
+        - name: NYC_Subway_Station 
           environment: NYC_Subway
           offset:  [-12.3,-1.5,    -0.15, -0.5] # manual [-14.0,-1.5,    -0.15,0.0] # [-12.32644356  -1.51589686  -0.53423887  -0.36430031] # is better for collisions
 
     sid:
-        - name: NYC_Subway_Station
-          environment: NYC_Subway
-          offset: [-12.3,-1.5,    -0.15, -0.5]
+        - name: Small_Apartment                         # Untested
+          environment: Butterfly_World
+          offset: [-1.7, -1.05,    -0.5, -180.0]
+
+        - name: Large_Apartment_Night_Near_Couches        # Untested
+          environment: Hazelwood_Loft_Full_Night
+          offset: [7.35, -3.25,          -0.95, -180.0]
 
     star:
         - name: Ancient_Asia_Museum_Room
           environment: Museum_Day_Small
           # yawDirectionConstraint: yawConstant
-          offset: [0.58,   0.058,  -0.43,  -90.77]  
+          offset: [0,   0,  -0.25,  -180]  

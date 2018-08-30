@@ -68,7 +68,7 @@ def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePa
     
     # trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
     # trajectoryFolders = ["winter", "clover", "mouse", "patrick","picasso","sid",] # All NYC
-    #trajectoryFolders = ["dice"]
+    trajectoryFolders = ["ampersand"]
 
     # Keep track of trajectories that collided
     trajectoryResults = []
@@ -124,9 +124,9 @@ def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePa
                 iterations += 1
 
                 # Gaussian for small offset tweaks
-                offset = seedOffset + np.random.randn(4)*np.array((0.35,0.35,0,1.75)) \
-                    + np.clip( np.random.randn(4)*np.array((0,0,-0.30,0)), -1e6, -seedOffset[2]) \
-                    + np.random.randint(4)*np.array((0,0,0,90)) 
+                offset = seedOffset + np.random.randn(4)*np.array((1.5,1.5,0,1.75)) \
+                    + np.clip( np.random.randn(4)*np.array((0,0,-0.30,0)), -1e6, -seedOffset[2]) 
+                #    + np.random.randint(4)*np.array((0,0,0,90)) 
                 
                 #  Uniform distribution for large changes in offset
                 # offset = seedOffset + (np.random.random(4)-0.5)*np.array((3,3,0,2.5)) \

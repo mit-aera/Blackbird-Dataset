@@ -27,8 +27,9 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
     #trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter"]
     # trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand"] # Batch 1
     #trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
-    trajectoryFolders = ["dice", "bentDice", "thrice", "tiltedThrice"] # Batch 2
-    # trajectoryFolders = ["oval"]
+    #trajectoryFolders = ["dice", "bentDice"] # Batch 2
+    # trajectoryFolders = ["thrice", "tiltedThrice", "ampersand"] # Batch 3
+    trajectoryFolders = ["ampersand"]
 
 
     for trajectoryFolder in trajectoryFolders:
