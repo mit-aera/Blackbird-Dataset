@@ -107,13 +107,9 @@ unitySettings:
           offset: [7.35, -3.25,          -0.95, -180.0]
           
     sid:
-        - name: Small_Apartment                         # Untested
-          environment: Butterfly_World
-          offset: [-1.7, -1.05,    -0.5, -180.0]
-
-        - name: Large_Apartment_Night_Near_Couches        # Untested
-          environment: Hazelwood_Loft_Full_Night
-          offset: [7.35, -3.25,          -0.95, -180.0]
+        - name: NYC_Subway_Station # Good vis and collision check
+          environment: NYC_Subway
+          offset: [-17.55,  -3.9,  -0.35,  -90]
 
     star:
         - name: NYC_Subway_Station 

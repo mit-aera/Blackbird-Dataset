@@ -69,7 +69,7 @@ def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePa
     # trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
     # trajectoryFolders = ["winter", "clover", "mouse", "patrick","picasso","sid",] # All NYC
     # trajectoryFolders = ["winter", "mouse", "picasso"]
-    trajectoryFolders = ["star"]
+    trajectoryFolders = ["sid"]
 
     # Keep track of trajectories that collided
     trajectoryResults = []
