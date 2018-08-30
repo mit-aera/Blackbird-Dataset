@@ -62,14 +62,14 @@ def runCollisionCheckOnDataset(datasetFolder, environmentOBJFolder, executablePa
     trajectoryFolders = [ traj for traj in config["unitySettings"].keys()]
     
     ############## DEBUG OVERRIDE
-    trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice"]
+    # trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice"]
     # trajectoryFolders = [ "dice", "bentDice", "thrice", "tiltedThrice"]
     # trajectoryFolders = [  "thrice", "tiltedThrice"]
     
     # trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
     # trajectoryFolders = ["winter", "clover", "mouse", "patrick","picasso","sid",] # All NYC
     # trajectoryFolders = ["winter", "mouse", "picasso"]
-    trajectoryFolders = ["clover"]
+    # trajectoryFolders = ["clover"]
 
     # Keep track of trajectories that collided
     trajectoryResults = []
