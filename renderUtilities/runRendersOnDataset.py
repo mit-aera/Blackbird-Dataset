@@ -29,7 +29,7 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
     #trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
     #trajectoryFolders = ["dice", "bentDice"] # Batch 2
     # trajectoryFolders = ["thrice", "tiltedThrice", "ampersand"] # Batch 3
-    trajectoryFolders = ["picasso"] 
+    trajectoryFolders = ["star"] 
 
 
     for trajectoryFolder in trajectoryFolders:

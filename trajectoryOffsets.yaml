@@ -75,7 +75,7 @@ unitySettings:
           yawDirectionConstraint: yawForward
           offset: [ -0.308,  -0.197,  -0.46,  98.0] #[ -0.30812066,  -0.19708459,  -0.45823485,  98.01003886] # Via random sample
 
-    # NYC SUBWAY Trajectories without offsets (yet)
+    # NYC SUBWAY Trajectories
     winter: # Has runs that go too high and too wide.
         - name: NYC_Subway_Station
           environment: NYC_Subway
@@ -86,13 +86,12 @@ unitySettings:
           environment: NYC_Subway
           offset: [-12.43,  -2.3,  -0.35,  90] # Found via random sample. Passes collisions and visual insp.
 
-    picasso:
+    picasso: # No collisions and good visual.
         - name: NYC_Subway_Station
           environment: NYC_Subway
           offset: [ -13,    0.15,    -0.35,          180] # [ -1.29891939e+01   1.47671063e-01  -1.41252232e-01   1.77164741e+02] 
 
     # Trajectories without offsets
-
     patrick:
         - name: Ancient_Asia_Museum_Room
           environment: Museum_Day_Small
@@ -117,6 +116,10 @@ unitySettings:
           offset: [7.35, -3.25,          -0.95, -180.0]
 
     star:
-        - name: Ancient_Asia_Museum_Room
-          environment: Museum_Day_Small
-          offset: [0,   0,  -0.25,  -180]  
+        - name: NYC_Subway_Station 
+          environment: NYC_Subway
+          offset: [-18.2,  -3.9,  -0.35,  90] #[-13.1,  -3.55,  -0.35,  90] # [-13.1010033   -3.55995153  -0.45190463  90.11547473]
+
+        #- name: Ancient_Asia_Museum_Room # IMPOSSIBLE, need to move columns inwards
+        #  environment: Museum_Day_Small
+        #  offset: [0,   0,  -0.4,  -180]  
