@@ -26,9 +26,9 @@ unitySettings:
           offset: [0, -4.0,          -0.35, -90]           # OK kitchen area 
 
     ampersand:
-        #- name: Small_Apartment
-        #  environment: Butterfly_World
-        #  offset: [0.05, 1.05,   -0.5, 65]                # OK Take off from near majong table    
+        - name: Small_Apartment
+          environment: Butterfly_World
+          offset: [0.05, 1.05,   -0.5, 65]                # OK Take off from near majong table    
 
         - name: Large_Apartment_Night_Near_Couches         # OK near couches
           environment: Hazelwood_Loft_Full_Night
@@ -79,30 +79,34 @@ unitySettings:
     winter: # Has runs that go too high and too wide.
         - name: NYC_Subway_Station
           environment: NYC_Subway
-          offset: [-12.3, -1.5,    -0.15,-0.5] # Might clip a bit. Basically impossible traj.
+          offset: [-12.75,  -0.5,  -0.35,  0] # found via random sample. Passes collisions and visual inspection
 
     mouse:
-        - name: NYC_Subway_Station
+        - name: NYC_Subway_Station # [-12.43112617  -2.30370596   0.          88.17811614]
           environment: NYC_Subway
-          offset: [-12.3,-1.5,    -0.15, -0.5]
+          offset: [-12.43,  -2.3,  -0.35,  90] # Found via random sample. Passes collisions and visual insp.
 
     picasso:
         - name: NYC_Subway_Station
           environment: NYC_Subway
-          offset: [-12.3,-1.5,    -0.15, -0.5]
+          offset: [ -13,    0.15,    -0.35,          180] # [ -1.29891939e+01   1.47671063e-01  -1.41252232e-01   1.77164741e+02] 
 
     # Trajectories without offsets
 
     patrick:
-        - name: NYC_Subway_Station
-          environment: NYC_Subway
-          offset: [-12.3,-1.5,    -0.15, -0.5]
+        - name: Ancient_Asia_Museum_Room
+          environment: Museum_Day_Small
+          offset: [0,   0,  -0.25,  -180]
 
     clover:
-        - name: NYC_Subway_Station 
-          environment: NYC_Subway
-          offset:  [-12.3,-1.5,    -0.15, -0.5] # manual [-14.0,-1.5,    -0.15,0.0] # [-12.32644356  -1.51589686  -0.53423887  -0.36430031] # is better for collisions
+        - name: Small_Apartment                         # Untested
+          environment: Butterfly_World
+          offset: [-1.7, -1.05,    -0.5, -180.0]
 
+        - name: Large_Apartment_Night_Near_Couches        # Untested
+          environment: Hazelwood_Loft_Full_Night
+          offset: [7.35, -3.25,          -0.95, -180.0]
+          
     sid:
         - name: Small_Apartment                         # Untested
           environment: Butterfly_World
@@ -115,5 +119,4 @@ unitySettings:
     star:
         - name: Ancient_Asia_Museum_Room
           environment: Museum_Day_Small
-          # yawDirectionConstraint: yawConstant
           offset: [0,   0,  -0.25,  -180]  
