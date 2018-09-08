@@ -25,13 +25,15 @@ def offsetPoseList(logPath):
         poseOffset = np.array(params["Controllers"]["Trajectory"]["offsetPos"])
         poseList = np.loadtxt(open(poselistFilename, "rb"), delimiter=",")
 
+        # Zero out z, such that min altitude is 0m.
+        minAlt = np.max(poseList[:,3])
+	poseOffset[2] = minAlt
+	
+
         # Subtract the xyz offset
         poseList[:, 1:4] = poseList[:, 1:4] - poseOffset
 
         print poseOffset
-
-        # Zero out z, such that min altitude is 0m.
-        minAlt = np.max(poseList[:,3])
 
         print "Min Alt: " + str(minAlt)
         poseList[:,3] = poseList[:,3] - minAlt
