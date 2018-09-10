@@ -1,3 +1,4 @@
+# Ignore data folders
 3dFigure8
 ampersand
 bentDice
@@ -15,3 +16,6 @@ star
 thrice
 tiltedThrice
 winter 
+
+# Ignore temp files
+*.swp
