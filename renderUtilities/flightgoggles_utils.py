@@ -38,6 +38,7 @@ class ImageHandler(object):
         
         encoding_paths = []
 
+        actual_framerate = 0
         for camera_name in cameras:
             print "Creating encoding file for ffmpeg for camera: " + camera_name
             encoding_filename = camera_name + "_ffmpeg_encoding_table.txt"
@@ -46,8 +47,18 @@ class ImageHandler(object):
             # Get all ppm files
             files = sorted(glob.glob(path.join(self.image_dir, "*_" + camera_name + file_extension)))
 
+            # Calculate actual camera rate
+            start_ts = self.getFileTimestamp(files[0])
+            end_ts = self.getFileTimestamp(files[-1])
+            num_frames = len(files)
+
+            actual_framerate = num_frames/((end_ts - start_ts)*1e-6)
+
             # Append to encoding file
             with open(encoding_path, "w") as f:
+                # Add ffconcat version to file
+                f.write("ffconcat version 1.0\n")
+            
                 for i, ppm_path in enumerate(files):
                     (unused, ppm_filename) = path.split(ppm_path)
 
@@ -65,20 +76,21 @@ class ImageHandler(object):
 
         print "Finished creating encoding file for ffmpeg"
         print "Starting video encoding using ffmpeg"
-        inputs = ' '.join(" -f concat -safe 0 -r " + str(fps) + " -i " + encoding_path for encoding_path in encoding_paths)
+        #inputs = ' '.join(" -f concat -safe 0 -r "+ str(actual_framerate) + " -i " + encoding_path  for encoding_path in encoding_paths)
+        inputs = ' '.join(" -thread_queue_size 512 -framerate " + str(actual_framerate) + " -pattern_type glob -i '" + path.join(self.image_dir, "*_" + camera_name + file_extension) + "' "  for camera_name in cameras)
 
         # Uses local ffmpeg compiled with NVENC GPU compression.
         # command = "/home/medusa/Downloads/ffmpeg-4.0.2/ffmpeg -y -loglevel fatal " + inputs + " -filter_complex hstack=inputs=" + str(len(cameras)) + " -vcodec hevc_nvenc -preset slow -rc vbr_minqp -qmin 20 -qmax 27 -tier high -pix_fmt yuv420p -r 60 " + path.join(self.image_dir, "video.mp4")
 
         # CPU-based h.264 compression (better compatibility and better quality)
         # Puts all 3 (1024x768) inputs in a tile pattern
-        command = "ffmpeg -y -loglevel fatal " + inputs + """ -filter_complex 'nullsrc=size=2048x1536 [base]; \
- [0:v]setpts=PTS-STARTPTS, scale=1024x768[upperleft]; \
- [1:v]setpts=PTS-STARTPTS, scale=1024x768[upperright]; \
- [2:v]setpts=PTS-STARTPTS, scale=1024x768[lowermiddle]; \
+        command = "ffmpeg -y " + inputs + "-filter_complex 'color=s=2048x1536:c=black:rate="+str(actual_framerate)+ """[base]; \
+ [0:v]scale=1024x768[upperleft]; \
+ [1:v]scale=1024x768[upperright]; \
+ [2:v]scale=1024x768[lowermiddle]; \
  [base][upperleft]overlay=shortest=1[tmp1]; \
  [tmp1][upperright]overlay=shortest=1:x=1024[tmp2]; \
- [tmp2][lowermiddle]overlay=shortest=1:x=512:y=768[out]' """ + " -map '[out]' -crf 14 -vcodec libx264 -pix_fmt yuv420p -r 60 " + path.join(self.image_dir, "video.mp4")
+ [tmp2][lowermiddle]overlay=shortest=1:x=512:y=768[out]' """ + "-map '[out]' -vcodec libx264 -crf 18 -pix_fmt yuv420p -preset slow -profile:v high -g 240 -r " + str(actual_framerate/2.0) + " " + path.join(self.image_dir, "video.mp4")
 
         print command
             
