@@ -67,7 +67,21 @@ class ImageHandler(object):
         print "Starting video encoding using ffmpeg"
         inputs = ' '.join(" -f concat -safe 0 -r " + str(fps) + " -i " + encoding_path for encoding_path in encoding_paths)
 
-        command = "/home/medusa/Downloads/ffmpeg-4.0.2/ffmpeg -y -loglevel fatal " + inputs + " -filter_complex hstack=inputs=" + str(len(cameras)) + " -vcodec hevc_nvenc -preset slow -rc vbr_minqp -qmin 20 -qmax 27 -tier high -pix_fmt yuv420p -r 60 " + path.join(self.image_dir, "video.mp4")
+        # Uses local ffmpeg compiled with NVENC GPU compression.
+        # command = "/home/medusa/Downloads/ffmpeg-4.0.2/ffmpeg -y -loglevel fatal " + inputs + " -filter_complex hstack=inputs=" + str(len(cameras)) + " -vcodec hevc_nvenc -preset slow -rc vbr_minqp -qmin 20 -qmax 27 -tier high -pix_fmt yuv420p -r 60 " + path.join(self.image_dir, "video.mp4")
+
+        # CPU-based h.264 compression (better compatibility and better quality)
+        # Puts all 3 (1024x768) inputs in a tile pattern
+        command = "ffmpeg -y -loglevel fatal " + inputs + """ -filter_complex 'nullsrc=size=2048x1536 [base]; \
+ [0:v]setpts=PTS-STARTPTS, scale=1024x768[upperleft]; \
+ [1:v]setpts=PTS-STARTPTS, scale=1024x768[upperright]; \
+ [2:v]setpts=PTS-STARTPTS, scale=1024x768[lowermiddle]; \
+ [base][upperleft]overlay=shortest=1[tmp1]; \
+ [tmp1][upperright]overlay=shortest=1:x=1024[tmp2]; \
+ [tmp2][lowermiddle]overlay=shortest=1:x=512:y=768[out]' """ + " -map '[out]' -crf 14 -vcodec libx264 -pix_fmt yuv420p -r 60 " + path.join(self.image_dir, "video.mp4")
+
+        print command
+            
         process = subprocess.Popen(command, shell=True)
         process.wait()
         print "Finished video encoding using ffmpeg"
