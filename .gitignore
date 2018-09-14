@@ -19,3 +19,4 @@ winter
 
 # Ignore temp files
 *.swp
+*.pyc

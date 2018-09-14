@@ -10,7 +10,7 @@ import glob2, os, sys, re, yaml, csv
 import numpy as np
 
 
-def offsetPoseList(logPath):
+def offsetPoseList(fps, logPath):
     fileStem = os.path.splitext(logPath)[0]
     
     # Load files
@@ -20,32 +20,30 @@ def offsetPoseList(logPath):
     poseOffsetFilename = fileStem + '_poses_offset.csv'
     
     with open(paramFilename, 'r') as paramFile:
-            
+        print fileStem
+   
         params = yaml.safe_load(paramFile)
         poseOffset = np.array(params["Controllers"]["Trajectory"]["offsetPos"])
         poseList = np.loadtxt(open(poselistFilename, "rb"), delimiter=",")
 
         # Zero out z, such that min altitude is 0m.
         minAlt = np.max(poseList[:,3])
+        print "Min Alt: " + str(minAlt)
 	poseOffset[2] = minAlt
-	
+        print poseOffset
 
         # Subtract the xyz offset
         poseList[:, 1:4] = poseList[:, 1:4] - poseOffset
-
-        print poseOffset
-
-        print "Min Alt: " + str(minAlt)
-        poseList[:,3] = poseList[:,3] - minAlt
 
         print "Original pose matrix: "
         print poseList.shape
 
         lastTS = 0
         rowList = []
-        # Prune poseList to 120hz
+        # Prune poseList to fps
+        frameLengthMicroseconds = (1.0e6/fps)*0.9
         for i,ts in enumerate(poseList[:,0]):
-            if ( ts-lastTS >= 8000):
+            if ( ts-lastTS >= frameLengthMicroseconds):
                 lastTS = ts 
                 rowList.append(i)
 
