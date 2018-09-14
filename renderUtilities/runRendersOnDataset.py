@@ -12,7 +12,8 @@ import threading
 import importlib
 from flightgoggles_utils import ImageHandler as FlightGogglesUtils
 
-cameras = ["Camera_L", "Camera_R", "Camera_D"]
+#cameras = ["Camera_L", "Camera_R", "Camera_D"]
+cameras = ["Camera_L"]
 
 def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
     devnull = open(os.devnull, 'wb') #python >= 2.4
@@ -30,6 +31,8 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
     #trajectoryFolders = ["dice", "bentDice"] # Batch 2
     # trajectoryFolders = ["thrice", "tiltedThrice", "ampersand"] # Batch 3
     # trajectoryFolders = ["clover"] 
+    trajectoryFolders = ["patrick", "dice", "bentDice"]    
+
 
     print "Rendering the following trajectories: "
     print trajectoryFolders
@@ -41,7 +44,7 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
         for experiment in config["unitySettings"][trajectoryFolder]:
 
             # Get Trajectory offset
-            envOffsetString = ' '.join( str(num) for num in experiment["offset"])
+            envOffsetString = ' '.join( "'" + str(num) + "'" for num in experiment["offset"])
 
             # Find all '*_poses_centered.csv' files in folder
             trajectoryFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*_poses_centered.csv') )
@@ -51,8 +54,8 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
             trajectoryFiles = [f for f in trajectoryFiles if subsetConstraint in f]
             
             ########### Limit file to 1 trajectory
-            # debugTrajectory = "yawConstant/clover_maxSpeed4p0"
-            # trajectoryFiles = [traj for traj in trajectoryFiles if debugTrajectory in traj]
+            debugTrajectory = "yawForward"
+            trajectoryFiles = [traj for traj in trajectoryFiles if debugTrajectory in traj]
 
             # Render these trajectories
             for trajectoryFile in trajectoryFiles:
