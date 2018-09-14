@@ -54,6 +54,10 @@ class ImageHandler(object):
 
             actual_framerate = num_frames/((end_ts - start_ts)*1e-6)
 
+            # For preview video, might want to bump down framerate
+            framerateDivisor = round(actual_framerate/fps)
+            outputFramerate = actual_framerate/framerateDivisor
+
             # Append to encoding file
             with open(encoding_path, "w") as f:
                 # Add ffconcat version to file
@@ -76,21 +80,47 @@ class ImageHandler(object):
 
         print "Finished creating encoding file for ffmpeg"
         print "Starting video encoding using ffmpeg"
-        #inputs = ' '.join(" -f concat -safe 0 -r "+ str(actual_framerate) + " -i " + encoding_path  for encoding_path in encoding_paths)
-        inputs = ' '.join(" -thread_queue_size 512 -framerate " + str(actual_framerate) + " -pattern_type glob -i '" + path.join(self.image_dir, "*_" + camera_name + file_extension) + "' "  for camera_name in cameras)
 
-        # Uses local ffmpeg compiled with NVENC GPU compression.
-        # command = "/home/medusa/Downloads/ffmpeg-4.0.2/ffmpeg -y -loglevel fatal " + inputs + " -filter_complex hstack=inputs=" + str(len(cameras)) + " -vcodec hevc_nvenc -preset slow -rc vbr_minqp -qmin 20 -qmax 27 -tier high -pix_fmt yuv420p -r 60 " + path.join(self.image_dir, "video.mp4")
+        # UNUSED EXAMPLE: Uses local ffmpeg compiled with NVENC GPU compression.
+        # Results in worse quality
+        # command = "/home/medusa/Downloads/ffmpeg-4.0.2/ffmpeg -y -loglevel fatal " + inputs + " -filter_complex hstack=inputs=" + str(len(cameras)) + " -vcodec hevc_nvenc -preset slow -rc vbr_minqp -qmin 18 -qmax 19 -tier high -pix_fmt yuv420p -r 60 " + path.join(self.image_dir, "video.mp4")
 
-        # CPU-based h.264 compression (better compatibility and better quality)
+        inputSources = ' '.join(" -thread_queue_size 512 -framerate " + str(actual_framerate) + " -pattern_type glob -i '" + path.join(self.image_dir, "*_" + camera_name + file_extension) + "' "  for camera_name in cameras)
+
+        encoderSettings = " -vcodec libx264 -crf 18 -pix_fmt yuv420p -preset slow -profile:v high -movflags +faststart "
+
+        # GPU Encoder. Requires FFMPEG to have been compiled with GPU support
+        # encoderSettings = " -vcodec h264_nvenc -preset slow -rc vbr_minqp -qmin 18 -qmax 20 -tier high -pix_fmt yuv420p "
+
+        outputRateSettings = " -g " + str(round(outputFramerate*2.0)) + " -r " + str(outputFramerate) + " "
+
+        # DEFINE CAMERA TILING FILTERS
+
         # Puts all 3 (1024x768) inputs in a tile pattern
-        command = "ffmpeg -y " + inputs + "-filter_complex 'color=s=2048x1536:c=black:rate="+str(actual_framerate)+ """[base]; \
+        tileFilter = " -filter_complex 'color=s=2048x1536:c=black:rate="+str(actual_framerate)+ """[base]; \
  [0:v]scale=1024x768[upperleft]; \
  [1:v]scale=1024x768[upperright]; \
  [2:v]scale=1024x768[lowermiddle]; \
  [base][upperleft]overlay=shortest=1[tmp1]; \
  [tmp1][upperright]overlay=shortest=1:x=1024[tmp2]; \
- [tmp2][lowermiddle]overlay=shortest=1:x=512:y=768[out]' """ + "-map '[out]' -vcodec libx264 -crf 18 -pix_fmt yuv420p -preset slow -profile:v high -g 240 -r " + str(actual_framerate/2.0) + " " + path.join(self.image_dir, "video.mp4")
+ [tmp2][lowermiddle]overlay=shortest=1:x=512:y=768[out]' -map '[out]' """
+
+        # Stacks cameras left to right horizontally
+        hstackFilter = " -filter_complex hstack=inputs=" + str(len(cameras)) + " "
+        # Passthrough for monocam video
+        passthroughFilter = " "
+
+        # Pick the right filter to use.
+        cameraFilter = ""
+        if (len(cameras) is 3):
+            cameraFilter = tileFilter
+        else if (len(cameras) is 1):
+            cameraFilter = passthroughFilter
+        else:
+            cameraFilter = hstackFilter
+
+        # CPU-based h.264 compression (better compatibility and better quality)
+        command = "ffmpeg -y " + inputSources + cameraFilter + encoderSettings + outputRateSettings + path.join(self.image_dir, "video.mp4")
 
         print command
             
@@ -98,11 +128,7 @@ class ImageHandler(object):
         process.wait()
         print "Finished video encoding using ffmpeg"
 
-    def createVideosAndCompress(self, cameras=['Camera_L', 'Camera_L_Depth', 'Camera_R'], file_extension=".png", fps=60):
-        for camera in cameras:
-            self.encodeVideoTimestampsUsingPPMs(camera, file_extension, fps)
-
-    def createVideo(self, cameras=['Camera_L', 'Camera_R', 'Camera_D'], file_extension=".png", fps=120):
+    def createVideo(self, cameras=['Camera_L', 'Camera_R', 'Camera_D'], file_extension=".png", fps=60):
         self.encodeVideoTimestampsUsingPPMs(cameras, file_extension, fps)
 
 ####################
@@ -118,7 +144,7 @@ class ImageHandler(object):
 #     imageHandler.convertPPMsToPNGs()
 #     imageHandler.deletePPMs()
 
-# def createVideosAndCompress(image_dir, cameras=['Camera_L', 'Camera_L_Depth', 'Camera_R'], _file_extension=".png", _fps=60):
+# def createVideos(image_dir, cameras=['Camera_L', 'Camera_L_Depth', 'Camera_R'], _file_extension=".png", _fps=60):
 #     for camera in cameras:
 #         createVideo(image_dir, camera, file_extension=_file_extension, fps=_fps)
     
@@ -132,7 +158,6 @@ if __name__ == '__main__':
 
     fire.Fire({
         'createVideo': createVideo,
-        'compressImages': compressImages,
-        'createVideoAndCompress': createVideosAndCompress
+        'compressImages': compressImages
     })
     
