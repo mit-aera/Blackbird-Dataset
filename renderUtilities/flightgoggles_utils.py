@@ -114,7 +114,7 @@ class ImageHandler(object):
         cameraFilter = ""
         if (len(cameras) is 3):
             cameraFilter = tileFilter
-        else if (len(cameras) is 1):
+        elif (len(cameras) is 1):
             cameraFilter = passthroughFilter
         else:
             cameraFilter = hstackFilter
