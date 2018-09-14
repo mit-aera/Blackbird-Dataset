@@ -96,7 +96,7 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
                 videoThread.start()
 
                 # Check that number of frames match for all cameras
-                numFrames = []
+                numFrames = [ sum(1 for line in open(trajectoryFile)) ]
 
                 # Package camera images
                 print "\nArchiving Images"
