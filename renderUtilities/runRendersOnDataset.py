@@ -4,18 +4,32 @@
 # August 3nd, 2018
 
 import fire
-import glob2, glob, os, sys, re, yaml, csv, shutil, subprocess
+import glob2, glob, os, sys, re, yaml, csv, shutil, subprocess, re
 import numpy as np
 import time
 import threading
 
 import importlib
 from flightgoggles_utils import ImageHandler as FlightGogglesUtils
+from blackbirdDatasetUtils import *
 
 #cameras = ["Camera_L", "Camera_R", "Camera_D"]
 cameras = ["Camera_L"]
 
-def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
+trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star"]
+fileFilter = re.compile(".*")
+
+############## 
+# DEBUG OVERRIDE
+# When uncommented, will only render files that match the regex
+##############
+# fileFilter = re.compile(".*dice.*yawViewpointOpt.*")
+
+def runRendersOnDataset(renderFPS, datasetFolder, renderFolder, clientExecutablePath, previewFPS=None):
+    # Set previewFPS to renderFPS if previewFPS is not defined
+    if not previewFPS:
+        previewFPS=renderFPS
+
     devnull = open(os.devnull, 'wb') #python >= 2.4
 
     config = yaml.safe_load( file(os.path.join(datasetFolder,"trajectoryOffsets.yaml"),'r') )
@@ -23,16 +37,6 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
     # Only select folders that we have offsets for
     # print config["unitySettings"]
     trajectoryFolders = [ traj for traj in config["unitySettings"].keys()]
-    
-    ############## DEBUG OVERRIDE
-    #trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter"]
-    # trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand"] # Batch 1
-    #trajectoryFolders = ["halfMoon", "oval", "ampersand", "dice", "thrice", "tiltedThrice", "winter"]
-    #trajectoryFolders = ["dice", "bentDice"] # Batch 2
-    # trajectoryFolders = ["thrice", "tiltedThrice", "ampersand"] # Batch 3
-    # trajectoryFolders = ["clover"] 
-    trajectoryFolders = ["patrick", "dice", "bentDice"]    
-
 
     print "Rendering the following trajectories: "
     print trajectoryFolders
@@ -46,33 +50,38 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
             # Get Trajectory offset
             envOffsetString = ' '.join( "'" + str(num) + "'" for num in experiment["offset"])
 
-            # Find all '*_poses_centered.csv' files in folder
-            trajectoryFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*_poses_centered.csv') )
+            # Find all '*.log' files in folder
+            logFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*.log') )
 
             # Check that this experiment is applicable to this particular subset of logs
             subsetConstraint = experiment.get("yawDirectionConstraint","")            
-            trajectoryFiles = [f for f in trajectoryFiles if subsetConstraint in f]
+            logFiles = [f for f in logFiles if subsetConstraint in f]
             
-            ########### Limit file to 1 trajectory
-            debugTrajectory = "yawForward"
-            trajectoryFiles = [traj for traj in trajectoryFiles if debugTrajectory in traj]
+            logFiles = [traj for traj in logFiles if fileFilter.match(traj)]
 
             # Render these trajectories
-            for trajectoryFile in trajectoryFiles:
+            for logFile in logFiles:
 
                 print "========================================"
-                print "Starting rendering of: " + trajectoryFile
+                print "Starting rendering of: " + logFile
+
+                # Get associated filenames of data for log
+                files = getFilenamesForLog(logFile)
 
                 # Get final output folder
-                outputFolder = os.path.dirname(trajectoryFile)
+                outputFolder = os.path.dirname(logFile)
                 
                 # Clean up render folder
                 shutil.rmtree(renderFolder,ignore_errors=True)
                 os.makedirs(renderFolder)
 
+                # Normalize trajectory in XY and Z
+                offsetPoseList(renderFPS, logFile)
+
                 # Run render command
-                command = clientExecutablePath + " '" + experiment["environment"] + "' " + envOffsetString + " '" + trajectoryFile + "'" 
-                 
+                command = clientExecutablePath + " '" + experiment["environment"] + "' " + envOffsetString + " '" + files["poselistCenteredFilename"] + "'" 
+                print command
+
                 process = subprocess.Popen(command, shell=True, stdout=devnull)
                 process.wait()
 		
@@ -81,7 +90,7 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
                 def compressAndMoveVideo():
                     print "Creating video"
                     flightGogglesUtils = FlightGogglesUtils(renderFolder)                    
-                    flightGogglesUtils.createVideo(cameras=cameras)
+                    flightGogglesUtils.createVideo(cameras=cameras, fps=previewFPS)
 
                     # Move videos to parent directory of CSV
                     print "Copying movie files."
@@ -96,7 +105,7 @@ def runRendersOnDataset(datasetFolder, renderFolder, clientExecutablePath):
                 videoThread.start()
 
                 # Check that number of frames match for all cameras
-                numFrames = [ sum(1 for line in open(trajectoryFile)) ]
+                numFrames = [ sum(1 for line in open(files["poselistCenteredFilename"])) ]
 
                 # Package camera images
                 print "\nArchiving Images"

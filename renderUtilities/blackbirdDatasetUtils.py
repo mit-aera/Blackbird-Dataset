@@ -9,22 +9,30 @@ import fire
 import glob2, os, sys, re, yaml, csv
 import numpy as np
 
+def getFilenamesForLog(logPath):
+    fileStem = os.path.splitext(logPath)[0]
+    print fileStem
+    
+    # Filenames
+    filenames ={
+        "paramFilename": fileStem + ".yaml",
+        "poselistFilename": fileStem + "_poses.csv",
+        "poselistCenteredFilename": fileStem + '_poses_centered.csv',
+        "poseOffsetFilename": fileStem + '_poses_offset.csv'
+    }
+    return filenames
+    
 
 def offsetPoseList(fps, logPath):
-    fileStem = os.path.splitext(logPath)[0]
+
+    files = getFilenamesForLog(logPath)
+
     
-    # Load files
-    paramFilename = fileStem + ".yaml"
-    poselistFilename = fileStem + "_poses.csv"
-    poselistCenteredFilename = fileStem + '_poses_centered.csv'
-    poseOffsetFilename = fileStem + '_poses_offset.csv'
-    
-    with open(paramFilename, 'r') as paramFile:
-        print fileStem
+    with open(files["paramFilename"], 'r') as paramFile:
    
         params = yaml.safe_load(paramFile)
         poseOffset = np.array(params["Controllers"]["Trajectory"]["offsetPos"])
-        poseList = np.loadtxt(open(poselistFilename, "rb"), delimiter=",")
+        poseList = np.loadtxt(open(files["poselistFilename"], "rb"), delimiter=",")
 
         # Zero out z, such that min altitude is 0m.
         minAlt = np.max(poseList[:,3])
@@ -66,9 +74,9 @@ def offsetPoseList(fps, logPath):
         print "Max frame gap: "
         print maxGap/8333.0
         # Save offset
-        np.savetxt(poseOffsetFilename, poseOffset.reshape([1,3]), delimiter=",", fmt='%f')
+        np.savetxt(files["poseOffsetFilename"], poseOffset.reshape([1,3]), delimiter=",", fmt='%f')
         # Save new trajectory
-        np.savetxt(poselistCenteredFilename, poseList, delimiter=",", fmt=['%d','%f','%f','%f','%f','%f','%f','%f'])
+        np.savetxt(files["poselistCenteredFilename"], poseList, delimiter=",", fmt=['%d','%f','%f','%f','%f','%f','%f','%f'])
 
 
 if __name__ == '__main__':

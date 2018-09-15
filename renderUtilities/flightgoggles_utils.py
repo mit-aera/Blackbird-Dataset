@@ -154,10 +154,10 @@ class ImageHandler(object):
 # # MAIN FUNCTION
 # ###################
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    fire.Fire({
-        'createVideo': createVideo,
-        'compressImages': compressImages
-    })
+#     fire.Fire({
+#         'createVideo': createVideo,
+#         'compressImages': compressImages
+#     })
     
