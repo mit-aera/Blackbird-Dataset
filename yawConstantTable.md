@@ -19,6 +19,8 @@
 | Tilted Thrice |    \-    | [✓][p10] | [✓][p20] | [✓][p30] | [✓][p40] | [✓][p50] | [✓][p60] | [✓][p70] |
 |    Winter     |    \-    | [✓][q10] | [✓][q20] | [✓][q30] | [✓][q40] | [✓][q50] |    \-    |    \-    |
 
+
+<!-- Constant yaw trajectory preview links for table -->
 [b10]: http://blackbird-dataset.mit.edu/data/ampersand/yawConstant/maxSpeed1p0/videos/
 [b20]: http://blackbird-dataset.mit.edu/data/ampersand/yawConstant/maxSpeed2p0/videos/
 [b30]: http://blackbird-dataset.mit.edu/data/ampersand/yawConstant/maxSpeed3p0/videos/
