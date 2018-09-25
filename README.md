@@ -7,14 +7,14 @@ The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.
 ## Preview the Dataset
 
 | Constant Yaw Trajectories<br>*Click for preview video*                                        |||||||||
-| :-----------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
+| :-----------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | 
 | Top speed (m/s) |   0.5  |   1.0    |   2.0    |   3.0    |   4.0    |   5.0    |   6.0    |   7.0    |
-|  3D Figure 8  |    ✓     |     ✓    |    ✓     |    ✓     |    ✓     |    ✓     |    \-    |    \-    |
+|  3D Figure 8  |    ✓*    |     ✓*   |    ✓*    |    ✓*    |    ✓*    |    ✓*    |    \-    |    \-    |
 |   Ampersand   |    \-    | [✓][b10] | [✓][b20] | [✓][b30] |    \-    |    \-    |    \-    |    \-    |
 |   Bent Dice   |    \-    | [✓][c10] | [✓][c20] | [✓][c30] | [✓][c40] |    \-    |    \-    |    \-    |
 |    Clover     |    \-    | [✓][d10] | [✓][d20] | [✓][d30] | [✓][d40] | [✓][d50] | [✓][d60] |    \-    |
 |     Dice      |    \-    |    \-    | [✓][e20] | [✓][e30] | [✓][e40] |    \-    |    \-    |    \-    |
-| Flat Figure 8 |    ✓     |    ✓     |    ✓     |    ✓     |    \-    |    ✓     |    \-    |    \-    |
+| Flat Figure 8 |    ✓*    |    ✓*    |    ✓*    |    ✓*    |    \-    |    ✓*    |    \-    |    \-    |
 |   Half-Moon   |    \-    | [✓][g10] | [✓][g20] | [✓][g30] | [✓][g40] |    \-    |    \-    |    \-    |
 |     Mouse     |    \-    | [✓][h10] | [✓][h20] | [✓][h30] | [✓][h40] | [✓][h50] | [✓][h60] | [✓][h70] |
 |     Oval      |    \-    |    \-    | [✓][i20] | [✓][i30] | [✓][i40] |    \-    |    \-    |    \-    |
@@ -26,6 +26,9 @@ The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.
 |    Thrice     |    \-    | [✓][o10] | [✓][o20] | [✓][o30] | [✓][o40] | [✓][o50] | [✓][o60] | [✓][o70] |
 | Tilted Thrice |    \-    | [✓][p10] | [✓][p20] | [✓][p30] | [✓][p40] | [✓][p50] | [✓][p60] | [✓][p70] |
 |    Winter     |    \-    | [✓][q10] | [✓][q20] | [✓][q30] | [✓][q40] | [✓][q50] |    \-    |    \-    |
+
+\* Calibration flights for dynamics, no camera data available.
+
 
 ## Download the Dataset
 
