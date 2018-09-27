@@ -10,26 +10,23 @@ import time
 import threading
 
 import importlib
-from flightgoggles_utils import ImageHandler as FlightGogglesUtils
+from flightgogglesUtils import ImageHandler as FlightGogglesUtils
 from blackbirdDatasetUtils import *
 
-#cameras = ["Camera_L", "Camera_R", "Camera_D"]
-cameras = ["Camera_L"]
 
-trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star"]
-fileFilter = re.compile(".*")
+# trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
 
-############## 
-# DEBUG OVERRIDE
-# When uncommented, will only render files that match the regex
-##############
-# fileFilter = re.compile(".*dice.*yawViewpointOpt.*")
 
-def runRendersOnDataset(renderFPS, datasetFolder, renderFolder, clientExecutablePath, previewFPS=None):
+def runRendersOnDataset(renderFPS, datasetFolder, renderFolder, clientExecutablePath, cameras = ["Camera_L", "Camera_R", "Camera_D"], previewFPS=None, fileFilter = ".*"):
     # Set previewFPS to renderFPS if previewFPS is not defined
     if not previewFPS:
         previewFPS=renderFPS
 
+    # Compile file filter regex
+    print fileFilter
+    fileFilter = re.compile(fileFilter)
+    
+    
     devnull = open(os.devnull, 'wb') #python >= 2.4
 
     config = yaml.safe_load( file(os.path.join(datasetFolder,"trajectoryOffsets.yaml"),'r') )
@@ -51,13 +48,15 @@ def runRendersOnDataset(renderFPS, datasetFolder, renderFolder, clientExecutable
             envOffsetString = ' '.join( "'" + str(num) + "'" for num in experiment["offset"])
 
             # Find all '*.log' files in folder
-            logFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*.log') )
+            logFiles = glob2.glob( os.path.join(datasetFolder, "data", trajectoryFolder, '**/*.log') )
 
             # Check that this experiment is applicable to this particular subset of logs
             subsetConstraint = experiment.get("yawDirectionConstraint","")            
             logFiles = [f for f in logFiles if subsetConstraint in f]
+            # print logFiles
             
             logFiles = [traj for traj in logFiles if fileFilter.match(traj)]
+            print logFiles
 
             # Render these trajectories
             for logFile in logFiles:
@@ -76,10 +75,10 @@ def runRendersOnDataset(renderFPS, datasetFolder, renderFolder, clientExecutable
                 os.makedirs(renderFolder)
 
                 # Normalize trajectory in XY and Z
-                offsetPoseList(renderFPS, logFile)
+                # offsetPoseList(renderFPS, logFile)
 
                 # Run render command
-                command = clientExecutablePath + " '" + experiment["environment"] + "' " + envOffsetString + " '" + files["poselistCenteredFilename"] + "'" 
+                command = clientExecutablePath + " '" + experiment["environment"] + "' '" + str(len(cameras)) + "' " + envOffsetString + " '" + files["poselistCenteredFilename"] + "'" 
                 print command
 
                 process = subprocess.Popen(command, shell=True, stdout=devnull)
@@ -138,12 +137,6 @@ def runRendersOnDataset(renderFPS, datasetFolder, renderFolder, clientExecutable
                 # Wait for video compression to finish
                 videoThread.join()
 
-
-
-
-
-    
-    
 
 
 if __name__ == '__main__':

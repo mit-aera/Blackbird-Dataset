@@ -11,7 +11,7 @@ import threading
 from multiprocessing import Pool 
 
 import importlib
-from flightgoggles_utils import ImageHandler as FlightGogglesUtils
+from flightgogglesUtils import ImageHandler as FlightGogglesUtils
 
 cameras = ["Camera_L", "Camera_R", "Camera_D"]
 
