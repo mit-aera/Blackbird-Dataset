@@ -1,5 +1,6 @@
 # Ignore data folders
 data
+BlackbirdDatasetData
 3dFigure8
 ampersand
 bentDice
