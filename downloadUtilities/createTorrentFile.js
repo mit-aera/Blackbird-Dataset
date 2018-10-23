@@ -35,7 +35,7 @@ createTorrent(streamList,
     function (err, torrent) {
         if (!err) {
             // `torrent` is a Buffer with the contents of the new .torrent file
-            fs.writeFile('blackbirdDataset.torrent', torrent)
+            fs.writeFile('../downloadUtilities/blackbirdDataset.torrent', torrent)
         } else {
             console.error(err)
         }
