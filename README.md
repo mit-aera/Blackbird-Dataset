@@ -4,6 +4,8 @@
 
 The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.mit.edu) at the [MIT FAST Lab](http://karaman.mit.edu/group.html) and will be published in the proceedings of ISER 2018.
 
+**NOTE: The BlackbirdDataset will be in prerelease until its official release at ISER 2018 on November 5th.**
+
 ## Preview the Dataset
 
 | Yaw Forward Trajectories<br>*Click for preview video*                                        |||||||||
