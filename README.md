@@ -2,7 +2,7 @@
 
 <!-- [![Video Link](https://img.youtube.com/vi/_VBww8YQuA8/0.jpg)](https://www.youtube.com/watch?v=_VBww8YQuA8) -->
 
-The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.mit.edu) at the [MIT FAST Lab](http://karaman.mit.edu/group.html) and has been published in the proceedings of ISER 2018 [(arXiv link)](https://arxiv.org/abs/1810.01987).
+The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.mit.edu) at the [MIT FAST Lab](http://karaman.mit.edu/group.html) and has been published in the proceedings of ISER 2018 [(arXiv link)](https://arxiv.org/abs/1810.01987). 
 
 **NOTE: The BlackbirdDataset will be in prerelease until its official release at ISER 2018 on November 5th.**
 
@@ -56,24 +56,9 @@ The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.
 
 ## Download the Dataset
 
-```bash
-# Clone this repo into your dataset destination folder
-git clone https://github.com/AgileDrones/Blackbird-Dataset.git
-cd Blackbird-Dataset
-mkdir data
+All dataset files can be downloaded from http://blackbird-dataset.mit.edu/BlackbirdDatasetData/
+**Note: the full dataset is quite large (4.9TB). However, chunks of the dataset can be downloaded separately for testing purposes.**
 
-# Install python dependencies for included utilities
-pip install -r requirements.txt
-
-# EX: download subset of the dataset via HTTP/BitTorrent hybrid method (fastest)
-./downloaderUtility.py downloadSubset flights='(trajectory in ["tiltedThrice"] and topSpeed >= 6.0)' files='["videoPreview", "bagfile"]' BlackbirdDatasetData/
-
-# EX: download all preview videos of the dataset via HTTP/BitTorrent hybrid method (fastest).
-# WARNING: total size of preview videos is 69GB. If you'd like to preview the dataset, please refer to the table above.
-./downloaderUtility.py downloadSubset files='["videoPreview"]' BlackbirdDatasetData/
-
-
-```
 ## Downloader Documentation
 
 `./downloaderUtility.py downloadSubset flights='(python_boolean_expression)' files='[filetype_list]' <output_location>`
