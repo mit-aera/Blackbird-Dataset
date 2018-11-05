@@ -2,7 +2,7 @@
 
 <!-- [![Video Link](https://img.youtube.com/vi/_VBww8YQuA8/0.jpg)](https://www.youtube.com/watch?v=_VBww8YQuA8) -->
 
-The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.mit.edu) at the [MIT FAST Lab](http://karaman.mit.edu/group.html) and will be published in the proceedings of ISER 2018.
+The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.mit.edu) at the [MIT FAST Lab](http://karaman.mit.edu/group.html) and has been published in the proceedings of ISER 2018 [(arXiv link)](https://arxiv.org/abs/1810.01987).
 
 **NOTE: The BlackbirdDataset will be in prerelease until its official release at ISER 2018 on November 5th.**
 
