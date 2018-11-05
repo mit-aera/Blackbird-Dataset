@@ -57,23 +57,9 @@ The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.
 ## Download the Dataset
 
 All dataset files can be downloaded from http://blackbird-dataset.mit.edu/BlackbirdDatasetData/
+
 **Note: the full dataset is quite large (4.9TB). However, chunks of the dataset can be downloaded separately for testing purposes.**
 
-## Downloader Documentation
-
-`./downloaderUtility.py downloadSubset flights='(python_boolean_expression)' files='[filetype_list]' <output_location>`
-
-* Options for `files=[...]` (string):
-    * `["videoPreview", "bagfile", "lcmLog", "Camera_L_Images","Camera_R_Images", "Camera_D_Images" ]`
-    * NOTE: small supportive files (such as CSVs) will be automatically downloaded.
-
-* Options for `flights=(...)` filter expression. Note: selects all flights by default.
-    * `trajectory` (string) in `["3dFigure8", "ampersand", "bentDice", "clover", "dice", "figure8", "halfMoon", "mouse", "oval", "patrick", "picasso", "sid", "sphinx", "star", "thrice", "tiltedThrice", "winter"]`
-    * `topSpeed` (m/s float) in `[0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]`
-    * `difficulty` (string) in `["easy", "medium", "hard", "extreme"]`
-    * `yawType` (string) in `["yawConstant", "yawForward"]`
-    * `location` (string) in `["Ancient_Egypt_Museum_Room", "Small_Apartment", "Large_Apartment_Night_Near_Column", "Outdoor_Patio_Night", "Large_Apartment_Day_Near_Kitchen", "Large_Apartment_Night_Near_Couches", "Ancient_Asia_Museum_Room"]` # Useful for specifying environment to download for flights rendered in multiple environments.
-    * `environment` (string) in `["Museum_Day", "Museum_Day_Small", "Butterfly_World", "Hazelwood_Loft_Full_Night", "Hazelwood_Loft_Full_Day", "NYC_Subway", "NYC_Subway_Station"]`
 
 ## Citation
 If you find this work useful for your research, please cite:
