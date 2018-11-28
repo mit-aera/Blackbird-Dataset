@@ -60,6 +60,22 @@ All dataset files can be downloaded from http://blackbird-dataset.mit.edu/Blackb
 
 **Note: the full dataset is quite large (4.9TB). However, chunks of the dataset can be downloaded separately for testing purposes.**
 
+## Using the Dataset in ROS
+
+For playing back dataset bags, we recommend importing this repo into your catkin workspace. The message files in this repo are needed for accessing RPM and PWM bag messages.
+
+```bash
+# Install in ROS workspace. Assumes that 'wstool init' has been run in workspace
+cd ~/catkin_ws/src
+
+curl https://raw.githubusercontent.com/AgileDrones/Blackbird-Dataset/master/.rosinstall >> .rosinstall
+wstool update
+
+# Build message types 'blackbird/MotorRPM', 'blackbird/MotorPWM'.
+cd ../
+catkin build
+```  
+
 
 ## Citation
 If you find this work useful for your research, please cite:

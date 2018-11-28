@@ -1,0 +1,4 @@
+# ROSINSTALL for BlackbirdDataset
+- git:
+    local-name: BlackbirdDataset
+    uri: https://github.com/AgileDrones/Blackbird-Dataset.git
