@@ -49,7 +49,7 @@ def encodeVideoTimestampsUsingPPMs(input_folder, file_extension, fps, ffmpeg_fol
     
     # Prefetch files
     print "Prefetching files to process"
-    command = "find "+input_folder+" -name *"+file_extension+" | parallel -j200 vmtouch -tq "
+    command = "find "+input_folder+" -name *"+file_extension+" | parallel -j100 vmtouch -tq "
     #print command
     process = subprocess.Popen(command, shell=True)
     process.wait()
