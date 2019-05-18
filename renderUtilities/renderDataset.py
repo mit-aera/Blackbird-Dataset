@@ -37,9 +37,9 @@ def runRendersOnDataset(datasetFolder):
 
             # Get universal render offset and convert to values compatible with TF
             renderOffsetArray = -1 * np.array(experiment["offset"])
-            renderTranslationOffset = renderOffsetArray[:3]
+            renderOffsetTranslation = renderOffsetArray[:3]
             theta = renderOffsetArray[3]
-            renderRotationOffset = np.array([0,0,np.sin(theta*np.pi/360.0),np.cos(theta*np.pi/360.0)])
+            renderOffsetRotation = np.array([0,0,np.sin(theta*np.pi/360.0),np.cos(theta*np.pi/360.0)])
 
             # Find all '*.bag' files in folder
             bagFiles = glob2.glob( os.path.join(datasetFolder, "BlackbirdDatasetData", trajectoryFolder, '**/*.bag') )
@@ -59,13 +59,23 @@ def runRendersOnDataset(datasetFolder):
                 print "Starting rendering of: " + bagFile
 
                 # Get per-trajectory centering offset.
-                offsetPath = bagfile[:-4] + "_poses_offset.txt"
-                with open(offsetPath, "r") as f:
-                    trajectoryOffsetString = f.read() + " 0 0 0 1"
+                offsetPath = bagFile[:-4] + "_poses_offset.csv"
+                trajectoryOffsetArray = np.loadtxt(offsetPath, delimiter=',')
+                trajectoryOffsetString = " ".join( map(str,trajectoryOffsetArray) ) + " 0 0 0 1"
+
+
+                # Clean output directory
+                outputDir = bagFile + "_images"
+                try:
+                    os.rmdir(outputDir)
+                except:
+                    pass
+
+                os.mkdir(outputDir)
 
 
                 # Run render command
-                command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='"  + bagFile + "' scene_filename:=" + experiment["environment"] + " trajectory_offset_transform:='" + trajectoryOffsetString + "' render_offset_rotation:='" + " ".join(renderOffsetRotation) + "' render_offset_translation:='" + " ".join(renderOffsetTranslation) + "'"
+                command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='"  + bagFile + "' scene_filename:=" + experiment["environment"] + " trajectory_offset_transform:='" + trajectoryOffsetString + "' render_offset_rotation:='" + " ".join(map(str,renderOffsetRotation)) + "' render_offset_translation:='" + " ".join(map(str,renderOffsetTranslation)) + "'"
                 print command
 
                 process = subprocess.Popen(command, shell=True, stdout=devnull)
