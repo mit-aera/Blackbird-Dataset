@@ -17,7 +17,7 @@ import threading
 # trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
 
 
-def runRendersOnDataset(datasetFolder):
+def runRendersOnDataset(datasetFolder, renderDir):
 
     devnull = open(os.devnull, 'wb') #python >= 2.4
 
@@ -65,21 +65,40 @@ def runRendersOnDataset(datasetFolder):
 
 
                 # Clean output directory
-                outputDir = bagFile + "_images"
+                outputDir = bagFile+"_images"
                 try:
-                    os.rmdir(outputDir)
+                   shutil.rmtree(renderDir)
+                except:
+                    pass
+                try:
+                    shutil.rmtree(outputDir)
                 except:
                     pass
 
                 os.mkdir(outputDir)
-
+                os.mkdir(renderDir)
 
                 # Run render command
-                command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='"  + bagFile + "' scene_filename:=" + experiment["environment"] + " trajectory_offset_transform:='" + trajectoryOffsetString + "' render_offset_rotation:='" + " ".join(map(str,renderOffsetRotation)) + "' render_offset_translation:='" + " ".join(map(str,renderOffsetTranslation)) + "'"
+                command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='"  + bagFile + "' output_folder:='"+ renderDir +"' scene_filename:=" + experiment["environment"] + " trajectory_offset_transform:='" + trajectoryOffsetString + "' render_offset_rotation:='" + " ".join(map(str,renderOffsetRotation)) + "' render_offset_translation:='" + " ".join(map(str,renderOffsetTranslation)) + "'"
                 print command
 
                 process = subprocess.Popen(command, shell=True, stdout=devnull)
                 process.wait()
+
+                # Compress files and move to final destination
+                print "Compressing images"
+                command = "find " + renderDir + " -iname *.ppm -type f -print0 | parallel --progress -0 -j +0 'gm mogrify -format png {}'"
+                process = subprocess.Popen(command, shell=True)
+                process.wait()
+
+                print "Deleting temporary PPMs"
+                ppm_files = glob.glob(os.path.join(renderDir,"*.ppm"))
+                for ppm_file in ppm_files:
+                    os.remove(ppm_file)
+
+                print "Taring and moving images to final destination"
+                shutil.make_archive(outputDir, "tar", renderDir)
+
 		time.sleep(2)
 
 
