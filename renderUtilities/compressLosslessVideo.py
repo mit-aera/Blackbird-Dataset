@@ -5,61 +5,48 @@ import os.path as path
 import datetime, time
 import numpy as np
 import fire
-#from more_itertools import peekable
 
-# Global vars
-
-class ImageHandler(object):
-    def __init__(self, image_dir):
-        # Config settings
-        self.image_dir = path.normpath(path.expanduser(image_dir))
-	print "Starting operations on image directory: " + self.image_dir
-
-    def convertPPMsToPNGs(self):
-        print "Starting PPM to PNG conversion"
-        command = "find " + self.image_dir + " -iname *.ppm -type f -print0 | parallel --progress -0 -j +0 'mogrify -format png {}'"
-        process = subprocess.Popen(command, shell=True)
-        process.wait()
-        print "Finished PPM to PNG conversion"
-
-    def deletePPMs(self):
-        print "Deleting temporary PPMs"
-        ppm_files = glob.glob(os.path.join(self.image_dir,"*.ppm"))
-        for ppm_file in ppm_files:
-            os.remove(ppm_file)
-        print "Finished deleting temporary PPMs"
-    
-    @staticmethod
-    def getFileTimestamp(filename):
-        timestamp = int(''.join(c for c in filename if c.isdigit()))
-        return timestamp
+'''
+Winter Guerra <winterg@mit.edu>
+June 4th, 2019
+'''
 
 
 def encodeVideoTimestampsUsingPPMs(input_folder, file_extension, fps, ffmpeg_folder="", output_folder=None):
+    '''
+    Used to compress sets of raw images into lossless HEVC videos using the gpu.
+    '''
+
     if (output_folder is None):
         output_folder=input_folder
 
+    # Sanitize input
     output_folder = output_folder.replace(".","")
 
     # Make sure that output folder exists
     process = subprocess.Popen("mkdir -p "+output_folder, shell=True)
     process.wait()
 
+    # Find all raw image files in folder.
     files = sorted(glob.glob(path.join(input_folder, "*" + file_extension)))
     
     # Prefetch files
-    print "Prefetching files to process"
-    command = "find "+input_folder+" -name *"+file_extension+" | parallel -j100 vmtouch -tq "
+    #print "Prefetching files to process"
+    #command = "find "+input_folder+" -name *"+file_extension+" | parallel -j100 vmtouch -tq "
     #print command
-    process = subprocess.Popen(command, shell=True)
-    process.wait()
+    #process = subprocess.Popen(command, shell=True)
+    #process.wait()
     #time.sleep(10)
 
-    decoding_path = path.join(output_folder, "ffmpeg_decoding_table.txt")
+    # Log image timestamps in video
+    decoding_path = path.join(output_folder, "video_frame_timestamps.txt")
     with open(decoding_path, "w") as f:
         for fileString in files:
-                f.write(fileString)
-                f.write('\n')
+            # convert string to a nanosecond timestamp.
+            timestamp = ''.join(c for c in filename if c.isdigit()
+            timestamp = timestamp + "000" # Convert to ns
+            f.write(fileString)
+            f.write('\n')
 
     print "Finished creating decoding file for ffmpeg"
     print "Starting video encoding using ffmpeg"
@@ -116,33 +103,10 @@ def encodeVideoTimestampsUsingPPMs(input_folder, file_extension, fps, ffmpeg_fol
     process.wait()
     print "Finished video encoding using ffmpeg"
 
-    print "Evicting cache"
-    process = subprocess.Popen("vmtouch -e "+input_folder, shell=True)
-    process.wait()
+    #print "Evicting cache"
+    #process = subprocess.Popen("vmtouch -e "+input_folder, shell=True)
+    #process.wait()
  
-
-def createVideo(self, cameras=['Camera_L', 'Camera_R', 'Camera_D'], file_extension=".png", fps=60):
-    self.encodeVideoTimestampsUsingPPMs(cameras, file_extension, fps)
-
-####################
-# HIGH LEVEL FUNCTIONS
-####################
-
-def createVideo(image_dir, cameras=['Camera_L', 'Camera_R', 'Camera_D'], file_extension=".png", fps=60):
-    imageHandler = ImageHandler(image_dir)
-    print cameras
-    imageHandler.encodeVideoTimestampsUsingPPMs(cameras, file_extension, fps)
-
-# def compressImages(image_dir):
-#     imageHandler = ImageHandler(image_dir)
-#     imageHandler.convertPPMsToPNGs()
-#     imageHandler.deletePPMs()
-
-def createVideos(image_dir, cameras=['Camera_L', 'Camera_L_Depth', 'Camera_R'], _file_extension=".png", _fps=120):
-    for camera in cameras:
-        createVideo(image_dir, [camera], file_extension=_file_extension, fps=_fps)
-    
-#     compressImages(image_dir)
 
 # ###################
 # # MAIN FUNCTION

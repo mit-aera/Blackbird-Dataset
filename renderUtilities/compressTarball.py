@@ -8,14 +8,17 @@ import glob2, glob, os, sys, re, yaml, csv, shutil, subprocess, re
 import numpy as np
 import time
 import threading
-from mpipe import OrderedStage, Pipeline
 
 
 #trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
 trajectoryFolders = [ "bentDice", "sphinx", "oval", "ampersand", "thrice", "tiltedThrice", "winter", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
 
-def runRendersOnDataset(datasetFolder):
 
+
+def runRendersOnDataset(datasetFolder):
+    '''
+    Used to take an entire dataset of ppm files, convert them to png, tarball, then upload to a different location. 
+    '''
     devnull = open(os.devnull, 'wb') #python >= 2.4
 
     config = yaml.safe_load( file(os.path.join(datasetFolder,"trajectoryOffsets.yaml"),'r') )

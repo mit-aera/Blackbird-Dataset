@@ -31,10 +31,11 @@ def offsetPoseList(fps, logPath):
     with open(files["paramFilename"], 'r') as paramFile:
    
         params = yaml.safe_load(paramFile)
+        # Get the mocap room offset used for this particular run
         poseOffset = np.array(params["Controllers"]["Trajectory"]["offsetPos"])
         poseList = np.loadtxt(open(files["poselistFilename"], "rb"), delimiter=",")
 
-        # Zero out z, such that min altitude is 0m.
+        # Zero out z, such that min altitude is 0m (takes off from ground).
         minAlt = np.max(poseList[:,3])
         print "Min Alt: " + str(minAlt)
 	poseOffset[2] = minAlt
