@@ -12,7 +12,7 @@ June 4th, 2019
 '''
 
 
-def encodeVideoTimestampsUsingPPMs(input_folder, file_extension, fps, ffmpeg_folder="", output_folder=None):
+def compressLosslessVideo(input_folder, file_extension, fps, ffmpeg_folder="", output_folder=None):
     '''
     Used to compress sets of raw images into lossless HEVC videos using the gpu.
     '''
