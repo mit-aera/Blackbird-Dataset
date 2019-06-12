@@ -12,7 +12,7 @@ June 4th, 2019
 '''
 
 
-def compressLosslessVideo(input_folder, file_extension, fps, ffmpeg_folder="", output_folder=None):
+def compressLosslessVideo(input_folder, file_extension, ffmpeg_folder="", output_folder=None):
     '''
     Used to compress sets of raw images into lossless HEVC videos using the gpu.
     '''
@@ -29,6 +29,9 @@ def compressLosslessVideo(input_folder, file_extension, fps, ffmpeg_folder="", o
 
     # Find all raw image files in folder.
     files = sorted(glob.glob(path.join(input_folder, "*" + file_extension)))
+
+    # Calculate the FPS
+    fps = len(files)/(files[-1] - files[0])
     
     # Prefetch files
     #print "Prefetching files to process"
@@ -43,7 +46,7 @@ def compressLosslessVideo(input_folder, file_extension, fps, ffmpeg_folder="", o
     with open(decoding_path, "w") as f:
         for fileString in files:
             # convert string to a nanosecond timestamp.
-            timestamp = ''.join(c for c in filename if c.isdigit()
+            timestamp = ''.join(c for c in fileString if c.isdigit())
             timestamp = timestamp + "000" # Convert to ns
             f.write(fileString)
             f.write('\n')
