@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-import sys, subprocess, glob, os
+import sys, subprocess, glob, os, shutil
 import os.path as path
 import datetime, time
 import numpy as np
@@ -12,7 +12,10 @@ June 4th, 2019
 '''
 
 
-def compressLosslessVideo(input_folder, file_extension, ffmpeg_folder="", output_folder=None):
+def getTimestampFromString(fileString):
+    return float(''.join(ch for ch in fileString if ch.isdigit())) * 1e-9
+
+def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     '''
     Used to compress sets of raw images into lossless HEVC videos using the gpu.
     '''
@@ -31,7 +34,7 @@ def compressLosslessVideo(input_folder, file_extension, ffmpeg_folder="", output
     files = sorted(glob.glob(path.join(input_folder, "*" + file_extension)))
 
     # Calculate the FPS
-    fps = len(files)/(files[-1] - files[0])
+    fps = len(files)/(getTimestampFromString(files[-1]) - getTimestampFromString(files[0]))
     
     # Prefetch files
     #print "Prefetching files to process"
@@ -58,7 +61,7 @@ def compressLosslessVideo(input_folder, file_extension, ffmpeg_folder="", output
     # Results in worse quality
     # command = "/home/medusa/Downloads/ffmpeg-4.0.2/ffmpeg -y -loglevel fatal " + inputs + " -filter_complex hstack=inputs=" + str(len(cameras)) + " -vcodec hevc_nvenc -preset slow -rc vbr_minqp -qmin 18 -qmax 19 -tier high -pix_fmt yuv420p -r 60 " + path.join(input_folder, "video.mp4")
 
-    inputSources = " -thread_queue_size 512 -framerate "+str(fps)+" -pattern_type glob -i '" + path.join(input_folder, "*" + file_extension) + "' " 
+    inputSources = " -thread_queue_size 512 -framerate "+str(fps)+" -pattern_type glob -i '" +  "*" + file_extension + "' " 
 
     #encoderSettings = " -vcodec hevc_nvenc -preset lossless -tier high -pix_fmt yuv420p "
     #encoderSettings = " -vcodec libx265 -crf 0 -pix_fmt yuv420p -preset slow "
@@ -95,16 +98,25 @@ def compressLosslessVideo(input_folder, file_extension, ffmpeg_folder="", output
 
     cameraFilter = passthroughFilter
 
+    # Create docker run
+    docker_args = "docker run --rm -it --runtime=nvidia --volume {}:/workspace willprice/nvidia-ffmpeg -y ".format(input_folder)
+
     # CPU-based h.264 compression (better compatibility and better quality)
     #command = "~/software/ffmpeg/ffmpeg -y " + inputSources + cameraFilter + encoderSettings + outputRateSettings + path.join(input_folder, camera_name+"_lossless.mov")
-    command = ffmpeg_folder+ "ffmpeg -y " + inputSources + cameraFilter + encoderSettings + outputRateSettings + path.join(output_folder, "lossless.mov")
+    command = docker_args + inputSources + cameraFilter + encoderSettings + outputRateSettings + "lossless.mov"
 
+    
 
     print command
         
     process = subprocess.Popen(command, shell=True)
     process.wait()
     print "Finished video encoding using ffmpeg"
+
+    # Move docker-created file to final destination
+    if (output_folder != input_folder):
+        shutil.move(os.path.join(input_folder, "lossless.mov"), os.path.join(output_folder, "lossless.mov"))
+
 
     #print "Evicting cache"
     #process = subprocess.Popen("vmtouch -e "+input_folder, shell=True)

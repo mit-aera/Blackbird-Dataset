@@ -65,27 +65,6 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                 offsetPath = bagFile[:-4] + "_poses_offset.csv"
                 trajectoryOffsetArray = np.loadtxt(offsetPath, delimiter=',')
                 trajectoryOffsetString = " ".join( map(str,trajectoryOffsetArray) ) + " 0 0 0 1"
-
-                # Generate timestamp file based on timestamp files left from the ISER dataset.
-                ISERDatasetPoseList = np.loadtxt(bagFile[:-4] + "_poses_centered.csv", delimiter=',')
-
-                # print ISERDatasetPoseList
-                
-                lastTS = 0
-                TSList = []
-                # Prune timestamps to a fps <= 120
-                frameLengthMicroseconds = (1.0e6/fps)*0.9
-                for i,ts in enumerate(ISERDatasetPoseList[:,0]):
-                    if ( ts-lastTS >= frameLengthMicroseconds):
-                        lastTS = ts 
-                        TSList.append(i)
-
-                # Save timestamps
-                timestampsToRender = np.array(TSList)
-                timestampFile = os.path.join(renderDir, "timestampsToRender.csv") 
-                np.savetxt(timestampFile, timestampsToRender, delimiter=",", fmt='%d')
-
-
                 # Clean output directory
                 outputDir = "{}_{}_{}".format(bagFile[:-4], experiment["name"], render_prefix)
                 try:
@@ -100,8 +79,28 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                 os.mkdir(outputDir)
                 os.mkdir(renderDir)
 
-                # Run render command
-                command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' timestamp_file:='{}' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, timestampFile, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
+ 
+                # Generate timestamp file based on timestamp files left from the ISER dataset.
+                ISERDatasetPoseList = np.loadtxt(bagFile[:-4] + "_poses_centered.csv", delimiter=',')
+
+                # print ISERDatasetPoseList
+                
+                lastTS = 0
+                TSList = []
+                # Prune timestamps to a fps <= 120
+                frameLengthMicroseconds = (1.0e6/fps)*0.9
+                for ts in ISERDatasetPoseList[:,0]:
+                    if ( ts-lastTS >= frameLengthMicroseconds):
+                        lastTS = ts 
+                        TSList.append(ts)
+
+                # Save timestamps
+                timestampsToRender = np.array(TSList)
+                timestampFile = os.path.join(renderDir, "timestampsToRender.csv") 
+                np.savetxt(timestampFile, timestampsToRender, delimiter=",", fmt='%d')
+
+               # Run render command
+                command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' timestampfile_path:='{}' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, timestampFile, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
                 print command
 
                 process = subprocess.Popen(command, shell=True) #, stdout=devnull)
@@ -109,10 +108,12 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
 
                 # Loop through output folders and compress files.
                 for d in glob.glob(os.path.join(renderDir, "*/")):
+                    subfolder_name = d.split('/')[-1]
+                    print subfolder_name
 
                     # Compress files and move to final destination
                     print "Compressing images to lossless HEVC"
-                    compressLosslessVideo(d, ".ppm", "~/software/ffmpeg/")                
+                    compressLosslessVideo(d, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))                
 
                 print "Deleting temporary PPMs"
                 ppm_files = glob.glob(os.path.join(renderDir,"*.ppm"))
