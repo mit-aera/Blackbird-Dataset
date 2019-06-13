@@ -110,21 +110,12 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
 
                 # Loop through output folders and compress files.
                 for d in glob.glob(os.path.join(renderDir, "*/")):
-                    subfolder_name = d.split('/')[-1]
+                    subfolder_name = d.split('/')[-2]
                     print subfolder_name
 
                     # Compress files and move to final destination
                     print "Compressing images to lossless HEVC"
                     compressLosslessVideo(d, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))                
-
-                print "Deleting temporary PPMs"
-                ppm_files = glob.glob(os.path.join(renderDir,"*.ppm"))
-                for ppm_file in ppm_files:
-                    os.remove(ppm_file)
-
-                print "Taring and moving images to final destination"
-                shutil.make_archive(outputDir, "tar", renderDir)
-
 		time.sleep(2)
 
 
