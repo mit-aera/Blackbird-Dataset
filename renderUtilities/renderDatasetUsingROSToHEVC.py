@@ -45,7 +45,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
             renderOffsetRotation = np.array([0,0,np.sin(theta*np.pi/360.0),np.cos(theta*np.pi/360.0)])
 
             # Find all '*.bag' files in folder
-            bagFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*_filtered.bag') )
+            bagFiles = glob2.glob( os.path.join(datasetFolder, trajectoryFolder, '**/*.bag') )
 
             # Check that this experiment is applicable to this particular subset of logs
             subsetConstraint = experiment.get("yawDirectionConstraint","")            
@@ -62,11 +62,11 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                 print "Starting rendering of: " + bagFile
 
                 # Get per-trajectory centering offset.
-                offsetPath = bagFile[:-13] + "_poses_offset.csv"
+                offsetPath = bagFile[:-4] + "_poses_offset.csv"
                 trajectoryOffsetArray = np.loadtxt(offsetPath, delimiter=',')
                 trajectoryOffsetString = " ".join( map(str,trajectoryOffsetArray) ) + " 0 0 0 1"
                 # Clean output directory
-                outputDir = "{}_{}_{}".format(bagFile[:-13], experiment["name"], render_prefix)
+                outputDir = "{}_{}_{}".format(bagFile[:-4], experiment["name"], render_prefix)
                 try:
                    shutil.rmtree(renderDir)
                 except:
@@ -81,7 +81,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
 
  
                 # Generate timestamp file based on timestamp files left from the ISER dataset.
-                ISERDatasetPoseList = np.loadtxt(bagFile[:-13] + "_poses_centered.csv", delimiter=',')
+                ISERDatasetPoseList = np.loadtxt(bagFile[:-4] + "_poses_centered.csv", delimiter=',')
 
                 # print ISERDatasetPoseList
                 
