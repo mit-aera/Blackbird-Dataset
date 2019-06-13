@@ -58,7 +58,7 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     #encoderSettings = " -vcodec libx265 -crf 0 -pix_fmt yuv420p -preset slow "
 
     # GPU Encoder. Requires FFMPEG to have been compiled with GPU support
-    encoderSettings = " -vcodec hevc_nvenc -2pass 1 -preset lossless -tier high -pix_fmt yuv444p -tag:v hvc1 "
+    encoderSettings = " -vcodec hevc_nvenc -2pass 1 -preset lossless -tier high -pix_fmt yuv444p -tag:v hvc1 " # 
 
     outputRateSettings = " -r "+str(fps)+" "
 
