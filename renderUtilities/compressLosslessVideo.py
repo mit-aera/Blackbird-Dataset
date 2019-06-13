@@ -35,14 +35,6 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
 
     # Calculate the FPS
     fps = len(files)/(getTimestampFromString(files[-1]) - getTimestampFromString(files[0]))
-    
-    # Prefetch files
-    #print "Prefetching files to process"
-    #command = "find "+input_folder+" -name *"+file_extension+" | parallel -j100 vmtouch -tq "
-    #print command
-    #process = subprocess.Popen(command, shell=True)
-    #process.wait()
-    #time.sleep(10)
 
     # Log image timestamps in video
     decoding_path = path.join(output_folder, "video_frame_n_sec_timestamps.txt")
@@ -66,7 +58,7 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     #encoderSettings = " -vcodec libx265 -crf 0 -pix_fmt yuv420p -preset slow "
 
     # GPU Encoder. Requires FFMPEG to have been compiled with GPU support
-    encoderSettings = " -vcodec hevc_nvenc -2pass 1 -preset lossless -tier high -pix_fmt yuv444p "
+    encoderSettings = " -vcodec hevc_nvenc -2pass 1 -preset lossless -tier high -pix_fmt yuv444p -tag:v hvc1 "
 
     outputRateSettings = " -r "+str(fps)+" "
 
@@ -104,8 +96,6 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     #command = "~/software/ffmpeg/ffmpeg -y " + inputSources + cameraFilter + encoderSettings + outputRateSettings + path.join(input_folder, camera_name+"_lossless.mov")
     command = docker_args + inputSources + cameraFilter + encoderSettings + outputRateSettings + "lossless.mov"
 
-    
-
     print command
         
     process = subprocess.Popen(command, shell=True)
@@ -115,11 +105,6 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     # Move docker-created file to final destination
     if (output_folder != input_folder):
         shutil.move(os.path.join(input_folder, "lossless.mov"), os.path.join(output_folder, "lossless.mov"))
-
-
-    #print "Evicting cache"
-    #process = subprocess.Popen("vmtouch -e "+input_folder, shell=True)
-    #process.wait()
  
 
 # ###################

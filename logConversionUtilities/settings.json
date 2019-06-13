@@ -1,0 +1,40 @@
+{
+  "dir_lcm_logs": "/data/IJRRBlackbirdDataset/",
+  "dir_rosbags": "/data/IJRRBlackbirdDatasetNewBags/",
+  "override": true,
+  "log-wise_verbose": false,
+
+  "lcm_channels": {
+
+    "imuRaw": {
+      "rostopic": "/blackbird/imu",
+      "frame_id": "imu",
+      "covariances": {
+        "angular_velocity": [0.0001, 0.0, 0.0,
+                             0.0, 0.0001, 0.0,
+                             0.0, 0.0, 0.0001],
+        "linear_acceleration": [0.01, 0.0, 0.0,
+                                0.0, 0.01, 0.0,
+                                0.0, 0.0, 0.01]
+      }
+    },
+
+    "poseMoCap": {
+      "rostopic": "/blackbird/state",
+      "frame_id": "mocap"
+    },
+
+    "poseRef":{
+      "rostopic": "/blackbird/pose_ref",
+      "frame_id": "pose_ref"
+    },
+
+    "rpmFeedback": {
+      "rostopic": "/blackbird/rotor_rpm"
+    },
+
+    "motorsPwms":{
+      "rostopic": "/blackbird/pwm"
+    }
+  }
+}
