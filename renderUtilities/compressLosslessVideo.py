@@ -45,12 +45,11 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     #time.sleep(10)
 
     # Log image timestamps in video
-    decoding_path = path.join(output_folder, "video_frame_timestamps.txt")
+    decoding_path = path.join(output_folder, "video_frame_n_sec_timestamps.txt")
     with open(decoding_path, "w") as f:
         for fileString in files:
             # convert string to a nanosecond timestamp.
             timestamp = ''.join(c for c in fileString if c.isdigit())
-            timestamp = timestamp + "000" # Convert to ns
             f.write(fileString)
             f.write('\n')
 
