@@ -18,7 +18,7 @@ from compressLosslessVideo import *
 
 
 # trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
-
+fileName = 'mouse'
 
 def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
 
@@ -52,7 +52,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
             bagFiles = [f for f in bagFiles if subsetConstraint in f]
             # print bagFiles
             
-            #bagFiles = [traj for traj in bagFiles if fileFilter.match(traj)]
+            bagFiles = [traj for traj in bagFiles if fileName in traj]
             # print bagFiles
 
             # Render these trajectories
@@ -88,8 +88,8 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                 lastTS = 0
                 TSList = []
                 # Prune timestamps to a fps <= 120
-                #frameLengthMicroseconds = (1.0e6/fps)*0.9
-                frameLengthMicroseconds = (10.0**6/fps) -1 #*0.9
+                frameLengthMicroseconds = (1.0e6/fps)*0.9
+                #frameLengthMicroseconds = (10.0**6/fps) -1 #*0.9
 
                 for ts in ISERDatasetPoseList[:,0]:
                     if ( (ts-lastTS) >= frameLengthMicroseconds):
@@ -108,7 +108,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                 process = subprocess.Popen(command, shell=True) #, stdout=devnull)
                 process.wait()
 
-                # Loop through output folders and compress files.
+                # Loop through output folders and compress files (in parallel).
                 for d in glob.glob(os.path.join(renderDir, "*/")):
                     subfolder_name = d.split('/')[-2]
                     print subfolder_name
