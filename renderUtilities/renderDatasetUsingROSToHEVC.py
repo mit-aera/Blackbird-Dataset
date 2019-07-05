@@ -8,7 +8,7 @@ import glob2, glob, os, sys, re, yaml, csv, shutil, subprocess, re
 import numpy as np
 import time
 import threading
-from multiprocessing import Pool
+from pathos.multiprocessing import Pool
 
 import importlib
 from compressLosslessVideo import *
@@ -18,8 +18,10 @@ from compressLosslessVideo import *
 #from blackbirdDatasetUtils import *
 
 
-# trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
-fileName = 'mouse'
+trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
+#fileName = 'mouse'
+
+trajectoryFolders = [ "winter", "clover", "mouse", "patrick", "picasso", "sid", "star"]
 
 def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
 
@@ -29,7 +31,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
 
     # Only select folders that we have offsets for
     # print config["unitySettings"]
-    trajectoryFolders = [ traj for traj in config["unitySettings"].keys()]
+#    trajectoryFolders = [ traj for traj in config["unitySettings"].keys()]
 
     print "Rendering the following trajectories: "
     print trajectoryFolders
@@ -53,7 +55,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
             bagFiles = [f for f in bagFiles if subsetConstraint in f]
             # print bagFiles
             
-            bagFiles = [traj for traj in bagFiles if fileName in traj]
+            #bagFiles = [traj for traj in bagFiles if fileName in traj]
             # print bagFiles
 
             # Render these trajectories
@@ -118,11 +120,11 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                     print "Compressing images to lossless HEVC"
                     compressLosslessVideo(_folder_name, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))           
 
-                p = Pool()
-                p.map(compressVideo, glob.glob(os.path.join(renderDir, "*/")))
+                #p = Pool()
+                #map(compressVideo, glob.glob(os.path.join(renderDir, "*/")))
 
-                # for d in glob.glob(os.path.join(renderDir, "*/")):
-                #     compressVideo(d)
+                for d in glob.glob(os.path.join(renderDir, "*/")):
+                    compressVideo(d)
 		time.sleep(2)
 
 
