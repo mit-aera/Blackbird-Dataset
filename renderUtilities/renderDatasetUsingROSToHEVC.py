@@ -8,6 +8,7 @@ import glob2, glob, os, sys, re, yaml, csv, shutil, subprocess, re
 import numpy as np
 import time
 import threading
+from multiprocessing import Pool
 
 import importlib
 from compressLosslessVideo import *
@@ -80,7 +81,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                 os.mkdir(renderDir)
 
  
-                # Generate timestamp file based on timestamp files left from the ISER dataset.
+                # Generate timestamp file based on timestamp files left from the ISER dataset (120hz).
                 ISERDatasetPoseList = np.loadtxt(bagFile[:-4] + "_poses_centered.csv", delimiter=',')
 
                 # print ISERDatasetPoseList
@@ -109,13 +110,19 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                 process.wait()
 
                 # Loop through output folders and compress files (in parallel).
-                for d in glob.glob(os.path.join(renderDir, "*/")):
-                    subfolder_name = d.split('/')[-2]
-                    print subfolder_name
+                def compressVideo(_folder_name):
+                    subfolder_name = _folder_name.split('/')[-2]
+                    #print subfolder_name
 
                     # Compress files and move to final destination
                     print "Compressing images to lossless HEVC"
-                    compressLosslessVideo(d, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))                
+                    compressLosslessVideo(_folder_name, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))           
+
+                p = Pool()
+                p.map(compressVideo, glob.glob(os.path.join(renderDir, "*/")))
+
+                # for d in glob.glob(os.path.join(renderDir, "*/")):
+                #     compressVideo(d)
 		time.sleep(2)
 
 

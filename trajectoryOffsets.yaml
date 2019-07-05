@@ -85,15 +85,28 @@ unitySettings:
           environment: NYC_Subway
           offset: [-12.75,  -0.5,  -0.35,  0] 
 
+        - name: NYC_Subway_Station_Moving_Train
+          environment: NYC_Subway_Moving_Train
+          offset: [-12.75,  -0.5,  -0.35,  0] 
+
     mouse:
         - name: NYC_Subway_Station 
           environment: NYC_Subway
+          offset: [-12.43,  -2.3,  -0.35,  90] 
+
+        - name: NYC_Subway_Station_Moving_Train 
+          environment: NYC_Subway_Moving_Train
           offset: [-12.43,  -2.3,  -0.35,  90] 
 
     picasso: 
         - name: NYC_Subway_Station
           environment: NYC_Subway
           offset: [ -13,    0.15,    -0.35,          180]  
+
+        - name: NYC_Subway_Station_Moving_Train
+          environment: NYC_Subway_Moving_Train
+          offset: [ -13,    0.15,    -0.35,          180]  
+
 
     patrick: 
         - name: Ancient_Asia_Museum_Room
@@ -114,9 +127,17 @@ unitySettings:
           environment: NYC_Subway
           offset: [-17.55,  -3.9,  -0.35,  -90]
 
+        - name: NYC_Subway_Station_Moving_Train 
+          environment: NYC_Subway_Moving_Train
+          offset: [-17.55,  -3.9,  -0.35,  -90]
+
     star: 
         - name: NYC_Subway_Station 
           environment: NYC_Subway
+          offset: [-18.2,  -3.9,  -0.35,  90] 
+
+        - name: NYC_Subway_Station_Moving_Train 
+          environment: NYC_Subway_Moving_Train
           offset: [-18.2,  -3.9,  -0.35,  90] 
 
         #- name: Ancient_Asia_Museum_Room # IMPOSSIBLE, need to move columns inwards
