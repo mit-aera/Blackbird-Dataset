@@ -21,7 +21,7 @@ from compressLosslessVideo import *
 trajectoryFolders = [ "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
 #fileName = 'mouse'
 
-trajectoryFolders = [ "winter", "clover", "mouse", "patrick", "picasso", "sid", "star"]
+trajectoryFolders = [ "winter", "mouse", "picasso", "sid", "star"]
 
 def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
 
@@ -105,7 +105,10 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                 np.savetxt(timestampFile, timestampsToRender, delimiter=",", fmt='%d')
 
                # Run render command
+                #command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' framerate:='120' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
+                
                 command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' timestampfile_path:='{}' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, timestampFile, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
+
                 print command
 
                 process = subprocess.Popen(command, shell=True) #, stdout=devnull)
