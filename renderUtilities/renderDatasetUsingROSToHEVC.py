@@ -63,13 +63,16 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
 
                 print "========================================"
                 print "Starting rendering of: " + bagFile
+                 
+                bagPathStem = bagFile[:-4]
+                bagDirectory = os.path.dirname(bagFile)
 
                 # Get per-trajectory centering offset.
-                offsetPath = bagFile[:-4] + "_poses_offset.csv"
+                offsetPath = bagPathStem + "_trajectory_offset.csv"
                 trajectoryOffsetArray = np.loadtxt(offsetPath, delimiter=',')
                 trajectoryOffsetString = " ".join( map(str,trajectoryOffsetArray) ) + " 0 0 0 1"
                 # Clean output directory
-                outputDir = "{}_{}_{}".format(bagFile[:-4], experiment["name"], render_prefix)
+                outputDir = "{}_{}_{}".format(bagPathStem, experiment["name"], render_prefix)
                 try:
                    shutil.rmtree(renderDir)
                 except:
@@ -84,17 +87,18 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
 
  
                 # Generate timestamp file based on timestamp files left from the ISER dataset (120hz).
-                ISERDatasetPoseList = np.loadtxt(bagFile[:-4] + "_poses_centered.csv", delimiter=',')
+                ISERDatasetPoseList = np.genfromtxt(os.path.join(bagDirectory,"csv","tf.csv"), delimiter=',',skip_header=1,usecols=[0],dtype=np.uint64)
 
+                #print ISERDatasetPoseList
                 # print ISERDatasetPoseList
                 
                 lastTS = 0
                 TSList = []
                 # Prune timestamps to a fps <= 120
-                frameLengthMicroseconds = (1.0e6/fps)*0.9
+                frameLengthMicroseconds = (1.0e9/fps)*0.9
                 #frameLengthMicroseconds = (10.0**6/fps) -1 #*0.9
 
-                for ts in ISERDatasetPoseList[:,0]:
+                for ts in ISERDatasetPoseList:
                     if ( (ts-lastTS) >= frameLengthMicroseconds):
                         lastTS = ts 
                         TSList.append(ts)
@@ -102,7 +106,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, fps):
                 # Save timestamps
                 timestampsToRender = np.array(TSList)
                 timestampFile = os.path.join(renderDir, "timestampsToRender.csv") 
-                np.savetxt(timestampFile, timestampsToRender, delimiter=",", fmt='%d')
+                np.savetxt(timestampFile, timestampsToRender, delimiter=",", fmt='%u')
 
                # Run render command
                 #command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' framerate:='120' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
