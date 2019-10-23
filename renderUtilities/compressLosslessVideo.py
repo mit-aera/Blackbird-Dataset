@@ -42,7 +42,7 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
         for fileString in files:
             # convert string to a nanosecond timestamp.
             timestamp = ''.join(c for c in fileString if c.isdigit())
-            f.write(fileString)
+            f.write(timestamp)
             f.write('\n')
 
     print "Finished creating decoding file for ffmpeg"
@@ -105,7 +105,51 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     # Move docker-created file to final destination
     if (output_folder != input_folder):
         shutil.move(os.path.join(input_folder, "lossless.mov"), os.path.join(output_folder, "lossless.mov"))
+
+def compressVideoTarball(input_folder, file_extension, output_folder=None):
+    '''
+    Used to compress sets of raw images into lossless tarball of images via .
+    '''
+
+    if (output_folder is None):
+        output_folder=input_folder
+
+    # Sanitize input
+    output_folder = output_folder.replace(".","")
+
+    # Make sure that output folder exists
+    process = subprocess.Popen("mkdir -p "+output_folder, shell=True)
+    process.wait()
+
+    # Find all raw image files in folder.
+    files = sorted(glob.glob(path.join(input_folder, "*" + file_extension)))
+
+    # Calculate the FPS
+    fps = len(files)/(getTimestampFromString(files[-1]) - getTimestampFromString(files[0]))
+
+    # Log image timestamps in video
+    decoding_path = path.join(output_folder, "video_frame_n_sec_timestamps.txt")
+    with open(decoding_path, "w") as f:
+        for fileString in files:
+            # convert string to a nanosecond timestamp.
+            timestamp = ''.join(c for c in fileString if c.isdigit())
+            f.write(timestamp)
+            f.write('\n')
+
  
+# For compressing tarball
+	# Run compression command
+	command = "find " + input_folder + " -name '*"+file_extension+"' -printf '%P\n' | parallel --bar gm convert " + os.path.join(input_folder,"{}") + " " + os.path.join(input_folder,"{.}.png") + " && find " + input_folder + " -name '*"+file_extension+"' -delete"  
+	print command
+
+	process = subprocess.Popen(command, shell=True)
+	process.wait()
+	
+	# Tarball folder and upload to NAS. (async, erases after done)
+	command = "tar -cf "+os.path.join(output_folder,"lossless.tar")+" -C "+input_folder+" ."
+	print command
+	process = subprocess.Popen(command, shell=True)
+
 
 # ###################
 # # MAIN FUNCTION

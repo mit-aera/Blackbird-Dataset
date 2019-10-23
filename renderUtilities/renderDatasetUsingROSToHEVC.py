@@ -87,6 +87,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
 
                     timestampFile = os.path.join(renderDir, "timestampsToRender.csv") 
                     np.savetxt(timestampFile, ISERDataset120HzTimestamps, delimiter=",", fmt='%u')
+                    np.savetxt(os.path.join(outputDir,"120hzTimestamps.csv"), ISERDataset120HzTimestamps, delimiter=",", fmt='%u')
 
                    # Run render command
                     #command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' framerate:='120' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
@@ -101,11 +102,15 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
                     # Loop through output folders and compress files (in parallel).
                     def compressVideo(_folder_name):
                         subfolder_name = _folder_name.split('/')[-2]
-                        #print subfolder_name
+                        print subfolder_name
 
                         # Compress files and move to final destination
-                        print "Compressing images to lossless HEVC"
-                        compressLosslessVideo(_folder_name, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))           
+                        if ("Segmented" in subfolder_name):
+                            print "Compressing Segmentation image feed to PNG tarball"
+                            compressVideoTarball(_folder_name, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))           
+                        else:
+                            print "Compressing RGB/Gray/Depth image feed to lossless HEVC"
+                            compressLosslessVideo(_folder_name, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))           
 
                     #p = Pool()
                     #map(compressVideo, glob.glob(os.path.join(renderDir, "*/")))
@@ -113,6 +118,8 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
                     for d in glob.glob(os.path.join(renderDir, "*/")):
                         compressVideo(d)
                     
+                    print "Finished rendering of: " + bagFile
+
                     time.sleep(2)
 
 
