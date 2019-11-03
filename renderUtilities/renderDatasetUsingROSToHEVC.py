@@ -13,7 +13,8 @@ from pathos.multiprocessing import Pool
 import importlib
 from compressLosslessVideo import *
 
-defaultTrajectoryList = [ "egg", "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
+#defaultTrajectoryList = [ "egg", "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
+defaultTrajectoryList = [ "egg", "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star"]
 
 def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolders = defaultTrajectoryList, experimentList = []):
 
