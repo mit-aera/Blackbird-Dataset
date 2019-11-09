@@ -114,10 +114,6 @@ unitySettings:
           offset: [-0.04,   -0.09,  -0.5,  0]
 
     clover:
-        #- name: Small_Apartment                         # Impossible
-        #  environment: Butterfly_World
-        #  offset: [-1.7, -1.05,    -0.5, -180.0]
-
         - name: Large_Apartment_Night_Near_Couches        
           environment: Hazelwood_Loft_Full_Night
           offset: [   8.6,    -1.6,    -1.32, -222] 
@@ -140,12 +136,17 @@ unitySettings:
           environment: NYC_Subway_Moving_Train
           offset: [-18.2,  -3.9,  -0.35,  90] 
 
-        #- name: Ancient_Asia_Museum_Room # IMPOSSIBLE, need to move columns inwards
-        #  environment: Museum_Day_Small
-        #  offset: [0,   0,  -0.4,  -180]  
-
     # Camera calibration 
     cameraCalibration:
         - name: Large_Apartment_Calibration_Square
           environment: Hazelwood_Loft_Full_Day
-          offset: [5.25,  -14.75,  2.75,  90] 
+          offset: [5.25,  -14.75,  2.75,  90]
+
+    # NEW for IJRR
+    egg: 
+        - name: Ancient_Asia_Museum_Room
+          environment: Museum_Day_Multiroom
+          scene_scale: 1.2
+          offset: [-0.04,   -0.09,  -0.5,  0]
+
+ 

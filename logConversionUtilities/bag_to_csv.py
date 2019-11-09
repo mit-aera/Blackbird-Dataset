@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 '''
 This script saves each topic in a bagfile as a csv.
 
