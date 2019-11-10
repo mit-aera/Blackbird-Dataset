@@ -14,6 +14,9 @@ public:
     _nh.getParam("timestamp_file_name", timestamp_file_name);
     ROS_INFO("Timestamp file: %s", timestamp_file_name.c_str());
 
+    _nh.getParam("scene_scale", _scene_scale);
+    ROS_INFO("Scene scale: %d", _scene_scale);
+
     _nh.getParam("desired_rate", _desiredRate);
     ROS_INFO("Desired Rate: %f s", 1/_desiredRate);
 
@@ -29,6 +32,8 @@ public:
     _info_sub = _nh.subscribe("/camera_info", 1, &republishImages::cb_camera, this);
   };
 
+
+  // Publishes an image every time it receives a camera info message
   void cb_camera(const sensor_msgs::CameraInfo::ConstPtr& msg) {
      if ( (msg->header.stamp.toSec() - lastTimestamp) < (1/(_desiredRate+1)) )
         return;
@@ -39,8 +44,23 @@ public:
 	   throw std::runtime_error("Requested a timestamp not in the timestamps file");
 
      }
+     // Publish the image
      if(!_frame.empty()) { 
-       _msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", _frame).toImageMsg();
+       // If is depth image, convert pixels.
+       cv::Mat 
+       cv::Mat _floatDepthImage = cv::Mat(_frame.height, _frame.width, "32FC1");
+       
+       // Iterate through pixels and remap them
+      for(int i=0; i<_frame.rows; i++)
+        for(int j=0; j<_frame.cols; j++) 
+        double z_compressed = _frame.at(i,j,0);
+        // You can now access the pixel value with cv::Vec3b
+        _floatDepthImage.at(i,j,0) = (_Z_near + std::pow(z_compressed, 4)*std::pow(_Z_far, 2)/(std::pow(255.0, 4)*(_Z_near + _Z_far)))*_C_scene;
+
+
+       _msg = cv_bridge::CvImage(std_msgs::Header(), "32FC1", _frame).toImageMsg();
+
+
        _msg->header.stamp = msg->header.stamp;
        _pub.publish(_msg);
        lastTimestamp = msg->header.stamp.toSec();
@@ -57,6 +77,13 @@ private:
   
   // Frame to grab the frame from the camera
   cv::Mat _frame;
+
+  // Scene scale
+  double _C_scene = 1.0;
+
+  // Near and far planes of camera
+  double _Z_near = 0.01;
+  double _Z_far  = 100.0;
 
   // Message Ptrs to populate the image messages
   sensor_msgs::ImagePtr _msg;
