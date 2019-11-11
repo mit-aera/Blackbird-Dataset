@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(blackbird)
+project(blackbird_msgs)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -21,7 +21,7 @@ generate_messages(
 
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES blackbird
+#  LIBRARIES blackbird_msgs
   CATKIN_DEPENDS message_runtime std_msgs
 #  DEPENDS system_lib
 )
