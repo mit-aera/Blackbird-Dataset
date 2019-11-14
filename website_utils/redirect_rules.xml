@@ -1,24 +1,23 @@
 <RoutingRules>
-  <!-- Index pages -->
-  <RoutingRule>
-    <Condition>
-      <KeyPrefixEquals>BlackbirdDatasetData/</KeyPrefixEquals>
-      <HttpErrorCodeReturnedEquals>403</HttpErrorCodeReturnedEquals>
-    </Condition>
-    <Redirect>
-      <HostName>ijrr-blackbird-dataset.s3-accelerate.amazonaws.com</HostName>
-      <HttpRedirectCode>302</HttpRedirectCode>
-    </Redirect>
-  </RoutingRule>
-    <RoutingRule>
-    <Condition>
-      <KeyPrefixEquals>ISER/</KeyPrefixEquals>
-      <HttpErrorCodeReturnedEquals>403</HttpErrorCodeReturnedEquals>
-    </Condition>
-    <Redirect>
-      <HostName>ijrr-blackbird-dataset.s3-accelerate.amazonaws.com</HostName>
-      <HttpRedirectCode>302</HttpRedirectCode>
-    </Redirect>
-  </RoutingRule>
-</RoutingRules>
+	  <RoutingRule>
+		      <Condition>
+			            <KeyPrefixEquals>BlackbirdDatasetData/</KeyPrefixEquals>
+				          <HttpErrorCodeReturnedEquals>404</HttpErrorCodeReturnedEquals>
+					      </Condition>
+					          <Redirect>
+							        <HostName>ijrr-blackbird-dataset.s3-accelerate.amazonaws.com</HostName>
+								      <HttpRedirectCode>302</HttpRedirectCode>
+								          </Redirect>
+									    </RoutingRule>
+									      <RoutingRule>
+										          <Condition>
+												        <KeyPrefixEquals>ISER/</KeyPrefixEquals>
+													      <HttpErrorCodeReturnedEquals>403</HttpErrorCodeReturnedEquals>
+													          </Condition>
+														      <Redirect>
+															            <HostName>ijrr-blackbird-dataset.s3-accelerate.amazonaws.com</HostName>
+																          <HttpRedirectCode>302</HttpRedirectCode>
+																	      </Redirect>
+																	        </RoutingRule>
+																	</RoutingRules>
 
