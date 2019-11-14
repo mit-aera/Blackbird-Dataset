@@ -1,0 +1,38 @@
+<launch>
+  <arg name="info_topic_name" default="camera_info"/>
+  <arg name="publish_topic_name" default="image_raw"/>
+  <arg name="path" default="$(env HOME)/BlackbirdDataset"/>
+  
+  <arg name="scene_name" default="NYC_Subway_Station_ijrr_new_sensors_3"/>
+  <arg name="trajectory" default="picasso"/>
+  <arg name="speed" default="5p0"/>
+  <arg name="yaw" default="Forward"/>
+
+  <arg name="timestamp_file_name" default="video_frame_n_sec_timestamps.txt"/>
+  <arg name="video_name" default="lossless.mov"/>
+  <arg name="bagfile_path" default="/"/>
+
+  <rosparam param="/use_sim_time">false</rosparam>
+ 
+ 
+  <node pkg="rosbag" type="play" name="player" args="$(arg path)/$(arg trajectory)/yaw$(arg yaw)/maxSpeed$(arg speed)/rosbag.bag" required="true"/>
+
+    <!-- Load static transforms for sensors -->
+    <include file="$(find flightgoggles)/config/sensors/blackbirdDatasetSensors.xml">
+      <arg name="render_stereo" value="true"/>
+      <arg name="body_frame" value="body_frame"/>
+    </include>
+  
+  <group ns="camera_l_depth">
+  <node name="republish_images_node_l" pkg="blackbird_publish_video" type="blackbird_publish_video_node" output="screen">
+    <remap from="/image_raw" to="image_raw"/>
+    <remap from="/camera_info" to="/camera_l/camera_info"/>
+    <remap from="~/camera_info" to="/camera_l_depth/camera_info"/>
+    <param name="video_name" type="string" value="$(arg path)/$(arg trajectory)/yaw$(arg yaw)/maxSpeed$(arg speed)/$(arg scene_name)/Camera_Left_Depth/lossless.mov"/>
+    <param name="desired_rate" type="double" value="360.0"/>
+    <param name="timestamp_file_name" type="string" value="$(arg path)/$(arg trajectory)/yaw$(arg yaw)/maxSpeed$(arg speed)/$(arg scene_name)/Camera_Left_Depth/$(arg timestamp_file_name)"/> 
+  </node>
+  </group>
+
+ 
+</launch>
