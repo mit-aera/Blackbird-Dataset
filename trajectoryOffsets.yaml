@@ -144,7 +144,7 @@ unitySettings:
 
     # NEW for IJRR
     egg: 
-        - name: Ancient_Asia_Museum_Room
+        - name: Ancient_Asia_Museum_Multiroom
           environment: Museum_Day_Multiroom
           scene_scale: 1.2
           offset: [-0.04,   -0.09,  -0.5,  0]

@@ -90,7 +90,7 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     cameraFilter = passthroughFilter
 
     # Create docker run
-    docker_args = "docker run --rm -it --runtime=nvidia --volume {}:/workspace willprice/nvidia-ffmpeg -y ".format(input_folder)
+    docker_args = "docker run --rm -it --gpus 'device=0' --volume {}:/workspace willprice/nvidia-ffmpeg -y ".format(input_folder)
 
     # CPU-based h.264 compression (better compatibility and better quality)
     #command = "~/software/ffmpeg/ffmpeg -y " + inputSources + cameraFilter + encoderSettings + outputRateSettings + path.join(input_folder, camera_name+"_lossless.mov")

@@ -63,7 +63,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
                     bagDirectory = os.path.dirname(bagFile)
 
                     # Get per-trajectory centering offset.
-                    offsetPath = bagPathStem + "_trajectory_offset.csv"
+                    offsetPath = os.path.join(bagDirectory,"flightNormalizationOffset.csv")
                     trajectoryOffsetArray = np.loadtxt(offsetPath, delimiter=',')
                     trajectoryOffsetString = " ".join( map(str,trajectoryOffsetArray) ) + " 0 0 0 1"
                     # Clean output directory
