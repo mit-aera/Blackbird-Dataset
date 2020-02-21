@@ -16,7 +16,7 @@ from compressLosslessVideo import *
 #defaultTrajectoryList = [ "egg", "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
 defaultTrajectoryList = [ "egg", "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star"]
 
-def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolders = defaultTrajectoryList, experimentList = []):
+def runRendersOnDataset(datasetFolder, renderDir, renderPrefix, trajectoryFolders = defaultTrajectoryList, experimentList = []):
 
     devnull = open(os.devnull, 'wb') #python >= 2.4
 
@@ -67,7 +67,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
                     trajectoryOffsetArray = np.loadtxt(offsetPath, delimiter=',')
                     trajectoryOffsetString = " ".join( map(str,trajectoryOffsetArray) ) + " 0 0 0 1"
                     # Clean output directory
-                    outputDir = "{}_{}_{}".format(bagPathStem, experiment["name"], render_prefix)
+                    outputDir = "{}_{}_{}".format(bagPathStem, experiment["name"], renderPrefix)
                     try:
                        shutil.rmtree(renderDir)
                     except:
@@ -106,11 +106,11 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
                         print subfolder_name
 
                         # Compress files and move to final destination
-                        if ("Segmented" in subfolder_name):
-                            print "Compressing Segmentation image feed to PNG tarball"
+                        if ("Segmented" in subfolder_name or "Depth" in subfolder_name ):
+                            print "Compressing image feed to PNG tarball"
                             compressVideoTarball(_folder_name, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))           
                         else:
-                            print "Compressing RGB/Gray/Depth image feed to lossless HEVC"
+                            print "Compressing RGB/Gray image feed to lossless HEVC"
                             compressLosslessVideo(_folder_name, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))           
 
                     #p = Pool()
