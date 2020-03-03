@@ -89,11 +89,13 @@ def runRendersOnDataset(datasetFolder, renderDir, renderPrefix, trajectoryFolder
                     timestampFile = os.path.join(renderDir, "timestampsToRender.csv") 
                     np.savetxt(timestampFile, ISERDataset120HzTimestamps, delimiter=",", fmt='%u')
                     np.savetxt(os.path.join(outputDir,"120hzTimestamps.csv"), ISERDataset120HzTimestamps, delimiter=",", fmt='%u')
+                    # Get scene_scale
+                    scene_scale = 
 
                    # Run render command
                     #command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' framerate:='120' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
                     
-                    command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' timestampfile_path:='{}' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, timestampFile, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
+                    command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' timestampfile_path:='{}' scene_filename:='{}' scene_scale:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, timestampFile, experiment["environment"], experiment.get("scene_scale", 1.0), trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
 
                     print command
 

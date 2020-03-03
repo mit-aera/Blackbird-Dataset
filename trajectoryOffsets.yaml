@@ -142,7 +142,7 @@ unitySettings:
           environment: Hazelwood_Loft_Full_Day
           offset: [5.25,  -14.75,  2.75,  90]
 
-    # NEW for IJRR
+    # NEW for IJRR20
     egg: 
         - name: Ancient_Asia_Museum_Multiroom
           environment: Museum_Day_Multiroom
