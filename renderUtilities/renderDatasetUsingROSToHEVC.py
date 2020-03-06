@@ -13,14 +13,19 @@ from pathos.multiprocessing import Pool
 import importlib
 from compressLosslessVideo import *
 
+defaultPlaybackRate = 0.05 # For 2x RGBD feeds
+
 #defaultTrajectoryList = [ "egg", "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
 defaultTrajectoryList = [ "egg", "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star"]
 
-def runRendersOnDataset(datasetFolder, renderDir, renderPrefix, trajectoryFolders = defaultTrajectoryList, experimentList = []):
+def runRendersOnDataset(datasetFolder, renderDir, renderPrefix, trajectoryFolders = defaultTrajectoryList, experimentList = [], bagfileWhitelistFile=None):
 
     devnull = open(os.devnull, 'wb') #python >= 2.4
 
     config = yaml.safe_load( file(os.path.join(datasetFolder,"trajectoryOffsets.yaml"),'r') )
+
+    if (bagfileWhitelistFile):
+        bagfileWhitelist = [line.rstrip('\n') for line in open(bagfileWhitelistFile)]
 
     # Only select folders that we have offsets for
     # print config["unitySettings"]
@@ -49,6 +54,11 @@ def runRendersOnDataset(datasetFolder, renderDir, renderPrefix, trajectoryFolder
                 subsetConstraint = experiment.get("yawDirectionConstraint","")            
                 bagFiles = [f for f in bagFiles if subsetConstraint in f]
                 # print bagFiles
+
+                # Check that this bagfile is on the whitelist
+                if (bagfileWhitelistFile):
+                    bagFiles = [f for f in bagFiles if os.path.join(os.path.dirname(f), experiment["name"]) in bagfileWhitelist]
+                print bagFiles
                 
                 #bagFiles = [traj for traj in bagFiles if fileName in traj]
                 # print bagFiles
@@ -89,13 +99,13 @@ def runRendersOnDataset(datasetFolder, renderDir, renderPrefix, trajectoryFolder
                     timestampFile = os.path.join(renderDir, "timestampsToRender.csv") 
                     np.savetxt(timestampFile, ISERDataset120HzTimestamps, delimiter=",", fmt='%u')
                     np.savetxt(os.path.join(outputDir,"120hzTimestamps.csv"), ISERDataset120HzTimestamps, delimiter=",", fmt='%u')
-                    # Get scene_scale
-                    scene_scale = 
 
-                   # Run render command
+                    # Adjust playback rate to be slower if in the NYC_Subway, because raycasting is slow in that environment
+                    adjustedPlaybackRate = defaultPlaybackRate/2.0 if (experiment["environment"] in ["NYC_Subway","NYC_Subway_Moving_Train"]) else defaultPlaybackRate
+                    # Run render command
                     #command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' framerate:='120' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
                     
-                    command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' timestampfile_path:='{}' scene_filename:='{}' scene_scale:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, timestampFile, experiment["environment"], experiment.get("scene_scale", 1.0), trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
+                    command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' timestampfile_path:='{}' scene_filename:='{}' scene_scale:='{}' playback_rate:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, timestampFile, experiment["environment"], experiment.get("scene_scale", 1.0), adjustedPlaybackRate, trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
 
                     print command
 
