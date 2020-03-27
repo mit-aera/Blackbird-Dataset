@@ -2,9 +2,7 @@
 
 <!-- [![Video Link](https://img.youtube.com/vi/_VBww8YQuA8/0.jpg)](https://www.youtube.com/watch?v=_VBww8YQuA8) -->
 
-The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.mit.edu) at the [MIT FAST Lab](http://karaman.mit.edu/group.html) and has been published in the proceedings of ISER 2018 [(arXiv link)](https://arxiv.org/abs/1810.01987). 
-
-
+The Blackbird Dataset was created by [MIT AERA](http://agiledrones.mit.edu) and has been published in the International Journal of Robotics Research [(IJRR link)](https://doi.org/10.1177/0278364920908331) and in the proceedings of ISER 2018 [(arXiv link)](https://arxiv.org/abs/1810.01987). 
 
 ## Preview the Dataset
 
@@ -80,10 +78,35 @@ catkin build
 ## Citation
 If you find this work useful for your research, please cite:
 ```bibtex
+@article{antoniniIJRRblackbird,
+  title ={The Blackbird UAV dataset},
+  journal = {The International Journal of Robotics Research},
+  author = {
+    Antonini, Amado and 
+    Guerra, Winter and 
+    Murali, Varun and 
+    Sayre-McCord, Thomas and 
+    Karaman, Sertac},
+  volume = {0},
+  number = {0},
+  pages = {0278364920908331},
+  year = {0},
+  doi = {10.1177/0278364920908331},
+  URL = { https://doi.org/10.1177/0278364920908331 },
+  eprint = { https://doi.org/10.1177/0278364920908331 }
+}
+
 @inproceedings{antonini2018blackbird,
   title={The Blackbird Dataset: A large-scale dataset for UAV perception in aggressive flight},
-  author={Antonini, Amado and Guerra, Winter and Murali, Varun and Sayre-McCord, Thomas and Karaman, Sertac},
   booktitle={2018 International Symposium on Experimental Robotics (ISER)},
+  author={
+    Antonini, Amado and 
+    Guerra, Winter and 
+    Murali, Varun and 
+    Sayre-McCord, Thomas and 
+    Karaman, Sertac},
+  doi={10.1007/978-3-030-33950-0_12},
+  URL={ https://doi.org/10.1007/978-3-030-33950-0_12 },  
   year={2018}
 }
 ```
