@@ -10,22 +10,34 @@ GRAY_FOLDERS=`find -L $1 -iname "*Left_Gray"`
 
 # Prepare output file with list of good depth renders
 echo "" > badGrayRenders.txt
+echo "" > badGTTimestampFiles.txt
 echo "" > goodNewRenders.txt
 echo "" > badNewRenders.txt
 
 # For each folder:
 for GRAY_FOLDER in $GRAY_FOLDERS; do
 
+  # Skip calibration folders
+  if [[ "$GRAY_FOLDER" == *"Calibration"* ]]; then
+    continue
+  fi
+
   EXPERIMENT=`echo $GRAY_FOLDER | awk -F '/' '{print $(NF-1)}'`
   CAMERA=`echo $GRAY_FOLDER | awk -F '/' '{print $NF}' | sed s%_Gray%%`
-  NEW_FOLDER=${GRAY_FOLDER}/../../rosbag_${EXPERIMENT}_ijrr_new_full_suite_1/${CAMERA}_RGB
+  NEW_FOLDER=${GRAY_FOLDER}/../../rosbag_${EXPERIMENT}_ijrr_new_full_suite_2/${CAMERA}_RGB
   FINAL_FOLDER_DEST=`realpath ${GRAY_FOLDER}/../`
   
   # Get number of Grayscale frames
-  GT_NUM_FRAMES=`wc -l < ${FINAL_FOLDER_DEST}/120HzTimestamps.csv`
-  EXPECTED_120_FRAMES=$(( GT_NUM_FRAMES - 20 )) # Add a buffer
-  EXPECTED_60_FRAMES=$(( GT_NUM_FRAMES / 2 ))
-  EXPECTED_60_FRAMES=$(( EXPECTED_60_FRAMES - 20 )) # Add a buffer
+  GT_NUM_FRAMES=0
+  if [[ ! -f ${FINAL_FOLDER_DEST}/120hzTimestamps.csv ]]; then
+    echo "${FINAL_FOLDER_DEST}" >> badGTTimestampFiles.txt
+    continue
+  else
+    GT_NUM_FRAMES=`wc -l < ${FINAL_FOLDER_DEST}/120hzTimestamps.csv`
+  fi
+  
+  EXPECTED_120_FRAMES=$(( GT_NUM_FRAMES * 1190 / 1200 )) # Add a buffer (119 FPS nominal)
+  EXPECTED_60_FRAMES=$(( GT_NUM_FRAMES * 590 / 1200 )) # 59FPS nominal
   
   # Check that Current RGB & Depth renders have the correct number of frames
   GRAY_NUM_IMAGES=`wc -l < ${FINAL_FOLDER_DEST}/${CAMERA}_Gray/video_frame_n_sec_timestamps.txt`
@@ -33,26 +45,26 @@ for GRAY_FOLDER in $GRAY_FOLDERS; do
 
   # Check that the new renders have the correct number of frames (if folder exists)
   NEW_RGB_NUM_IMAGES=0
-  if [ -d $NEW_FOLDER ]; then
+  if [[ -d $NEW_FOLDER && -f ${FINAL_FOLDER_DEST}/${CAMERA}_Depth/lossless.tar ]]; then
     # Check number of new images
     NEW_RGB_NUM_IMAGES=`wc -l < ${NEW_FOLDER}/video_frame_n_sec_timestamps.txt`
   fi
     
   # Check that the new renders have the correct number of frames (if folder exists)
   RGB_NUM_IMAGES=0
-  if [ -d ${FINAL_FOLDER_DEST}/${CAMERA}_RGB ]; then
+  if [[ -d ${FINAL_FOLDER_DEST}/${CAMERA}_RGB && -f ${FINAL_FOLDER_DEST}/${CAMERA}_RGB/lossless.mov ]]; then
     # Check number of new images
     RGB_NUM_IMAGES=`wc -l < ${FINAL_FOLDER_DEST}/${CAMERA}_RGB/video_frame_n_sec_timestamps.txt`
   fi
 
-  # Check that the new renders have the correct number of frames (if folder exists)
+  # Check that the new renders have the correct number of frames (if folder exists & tarballs exist)
   DEPTH_NUM_IMAGES=0
-  if [ -d ${FINAL_FOLDER_DEST}/${CAMERA}_Depth ]; then
+  if [[ -d ${FINAL_FOLDER_DEST}/${CAMERA}_Depth && -f ${FINAL_FOLDER_DEST}/${CAMERA}_Depth/lossless.tar ]]; then
     # Check number of new images
     DEPTH_NUM_IMAGES=`wc -l < ${FINAL_FOLDER_DEST}/${CAMERA}_Depth/video_frame_n_sec_timestamps.txt`
   fi
 
-  echo "Expected Frames from GT: $EXPECTED_60_FRAMES, Orig Gray: $GRAY_NUM_IMAGES, Orig RGB: $RGB_NUM_IMAGES, Orig Depth: $DEPTH_NUM_IMAGES, New: $NEW_RGB_NUM_IMAGES"
+  echo "Min 60Hz Frames from GT: $EXPECTED_60_FRAMES, Orig Gray: $GRAY_NUM_IMAGES, Orig RGB: $RGB_NUM_IMAGES, Orig Depth: $DEPTH_NUM_IMAGES, New: $NEW_RGB_NUM_IMAGES"
   
   # Cases to check:
   #########
@@ -71,6 +83,8 @@ for GRAY_FOLDER in $GRAY_FOLDERS; do
     # The new renders are good!
     echo Good!
     echo "`realpath $NEW_FOLDER` $FINAL_FOLDER_DEST" >> goodNewRenders.txt
+
+  # NOTE: This discards originals that have RGBD frames over the minimum, but do not have the same number of frames.
 
   else 
 	  
@@ -114,6 +128,6 @@ for GRAY_FOLDER in $GRAY_FOLDERS; do
   #  echo "$NEW_FOLDER $FINAL_FOLDER_DEST" >> goodDepthRenders.txt
   #fi
   
-  echo "Processed $FOLDER"
+  echo "Processed $GRAY_FOLDER"
 
 done

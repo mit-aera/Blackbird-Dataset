@@ -25,6 +25,11 @@ def getTimestampSetForCamera(cameraName, renderLocation):
     
     return set(timestamp)
 
+def getNewRenderLocation(renderLocation):
+    experimentName = os.path.basename(renderLocation)
+    relativePath = f"../rosbag_{experimentName}_ijrr_new_full_suite_2/"
+    return os.path.realpath(os.path.join(renderLocation, relativePath))
+
 
 def getFPSFromTimestampSet(tsSet):
     # Timestamps are in ns
@@ -56,25 +61,39 @@ def removeFramesFromTarball(cameraName, timestampsToRemove, renderLocation):
 def main(renderLocation, dryrun=True):
     # Clean up the input path
     renderLocation = os.path.realpath(renderLocation)
+    newRenderLocation = getNewRenderLocation(renderLocation)
 
-    # Get sets of the RGBD timestamps
-    listOfOriginalTimestampSets = [getTimestampSetForCamera(c, renderLocation) for c in allCameraList] 
+    # Test flags
+    oldStats = {"passesChecks":False,"parentDir":renderLocation}
+    newStats = {"passesChecks":False,"parentDir":newRenderLocation}
 
-    # Get the timestamps of whole RGBD frames across both cameras
-    RGBDTimestampSet = set.intersection(*listOfOriginalTimestampSets)
+    # Check current location and new renders
+    for stats in [oldStats, newStats]:
+    
+        if (oldStats["passesChecks"]): continue
+        if (not os.path.exists( os.path.join(stats["parentDir"], rgbCameraList[0], timestampFileName) )): continue
 
-    # Check if this render batch still meets minimum criteria, otherwise skip.
-    passesChecks = validateNewTimestampSet(RGBDTimestampSet)
+        # Get sets of the RGBD timestamps
+        stats["listOfOriginalTimestampSets"] = [getTimestampSetForCamera(c, stats["parentDir"]) for c in allCameraList] 
 
-    # Plan which tarballs/movs need to be unpacked
-    listOfDeletionsForAllCameras = [ camSet - RGBDTimestampSet for camSet in listOfOriginalTimestampSets ]
+        # Get the timestamps of whole RGBD frames across both cameras
+        stats["RGBDTimestampSet"] = set.intersection(*stats["listOfOriginalTimestampSets"])
+
+        # Check if this render batch still meets minimum criteria, otherwise skip.
+        stats["passesChecks"] = validateNewTimestampSet(stats["RGBDTimestampSet"])
+
+        # Plan which tarballs/movs need to be unpacked
+        stats["listOfDeletionsForAllCameras"] = [ camSet - stats["RGBDTimestampSet"] for camSet in stats["listOfOriginalTimestampSets"] ]
 
     # DEBUG: Print plan
-    if (not passesChecks):
-        print(renderLocation)
-
-        
-        [print(f"{_camName}: {len(_originals)} frames, {len(_deletions)} deletions") for _camName,_originals,_deletions in zip(allCameraList, listOfOriginalTimestampSets, listOfDeletionsForAllCameras) if getFPSFromTimestampSet(_originals) < fpsCuttoff ]
+    if (not oldStats["passesChecks"] and not newStats["passesChecks"]):
+        # This experiment MUST be rerendered.
+        for stats in [oldStats, newStats]:
+            print(stats["parentDir"])
+            if ("listOfOriginalTimestampSets" in stats.keys()): 
+                [print(f"{_camName}: {len(_originals)} frames, {len(_deletions)} deletions") for _camName,_originals,_deletions in zip(allCameraList, stats["listOfOriginalTimestampSets"], stats["listOfDeletionsForAllCameras"]) if getFPSFromTimestampSet(_originals) < fpsCuttoff ]
+            else:
+                print("Renders not found.")
         
         print("======")
         print("")
