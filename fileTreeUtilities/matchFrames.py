@@ -5,6 +5,7 @@
 
 # This file looks at past RGB and Depth folders and prunes the frames such that all RGBD frames are in sync and there are no extra RGB or Depth frames.
 
+# Usage find -L ~/BlackbirdDataset -iname "*Left_Gray" | xargs -I {} ./matchFrames.py {}/../ | tee matchFramesOutput.txt
 # Usage: ./matchFrames.py BlackbirdDataset/egg/yawConstant/maxSpeed8p0/Ancient_Asia_Museum_Multiroom/ --dryrun
 
 import numpy as np
@@ -16,12 +17,23 @@ depthCameraList = ["Camera_Left_Depth", "Camera_Down_Depth"]
 allCameraList = rgbCameraList + depthCameraList
 
 timestampFileName = "video_frame_n_sec_timestamps.txt"
+fpsCuttoff = 59.0
 
 def getTimestampSetForCamera(cameraName, renderLocation):
     timestampFilePath = os.path.join(renderLocation, cameraName, timestampFileName)
     timestamp = np.loadtxt(timestampFilePath, dtype=np.int64)
     
     return set(timestamp)
+
+
+def getFPSFromTimestampSet(tsSet):
+    # Timestamps are in ns
+    _max = max(tsSet)
+    _min = min(tsSet)
+    numFrames =len(tsSet) 
+    nominalFPS = numFrames * 1.0e9 / (_max - _min)
+    return nominalFPS
+
 
 def validateNewTimestampSet(RGBDTimestampSet):
     '''
@@ -31,19 +43,20 @@ def validateNewTimestampSet(RGBDTimestampSet):
     '''
     
     # Timestamps are in ns
-    _max = max(RGBDTimestampSet)
-    _min = min(RGBDTimestampSet)
-    numFrames =len(RGBDTimestampSet) 
-    nominalFPS = numFrames * 1.0e9 / (_max - _min)
+    nominalFPS = getFPSFromTimestampSet(RGBDTimestampSet)
 
-    testsPassed = (nominalFPS >= 59.0)
+    testsPassed = (nominalFPS >= fpsCuttoff)
     if (not testsPassed): 
-        print( f"FAILED: FPS {nominalFPS}. Max: {_max}, min: {_min}, frames: {numFrames}" )
+        print( f"FAILED: FPS {nominalFPS}" )
     return testsPassed
 
-def removeFramesFromTarball(cameraName, timestampsToRemove, renderLocation)
+def removeFramesFromTarball(cameraName, timestampsToRemove, renderLocation):
+    pass
 
 def main(renderLocation, dryrun=True):
+    # Clean up the input path
+    renderLocation = os.path.realpath(renderLocation)
+
     # Get sets of the RGBD timestamps
     listOfOriginalTimestampSets = [getTimestampSetForCamera(c, renderLocation) for c in allCameraList] 
 
@@ -58,10 +71,15 @@ def main(renderLocation, dryrun=True):
 
     # DEBUG: Print plan
     if (not passesChecks):
-        [print(f"{_camName}: {len(_originals)} frames, {len(_deletions)} deletions") for _camName,_originals,_deletions in zip(allCameraList, listOfOriginalTimestampSets, listOfDeletionsForAllCameras) ]
+        print(renderLocation)
+
         
+        [print(f"{_camName}: {len(_originals)} frames, {len(_deletions)} deletions") for _camName,_originals,_deletions in zip(allCameraList, listOfOriginalTimestampSets, listOfDeletionsForAllCameras) if getFPSFromTimestampSet(_originals) < fpsCuttoff ]
+        
+        print("======")
+        print("")
         # Do not create a plan for fixing this render.
-        # @TODO: mark render for reason for failure.
+        
         return
 
     # Execute plan on tarballs/movs
