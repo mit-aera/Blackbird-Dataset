@@ -81,7 +81,7 @@ string frame_id
       buff.write(_get_struct_3I().pack(_x.header.seq, _x.header.stamp.secs, _x.header.stamp.nsecs))
       _x = self.header.frame_id
       length = len(_x)
-      if python3 or type(_x) == unicode:
+      if python3 or type(_x) == str:
         _x = _x.encode('utf-8')
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
@@ -155,7 +155,7 @@ string frame_id
       buff.write(_get_struct_3I().pack(_x.header.seq, _x.header.stamp.secs, _x.header.stamp.nsecs))
       _x = self.header.frame_id
       length = len(_x)
-      if python3 or type(_x) == unicode:
+      if python3 or type(_x) == str:
         _x = _x.encode('utf-8')
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
