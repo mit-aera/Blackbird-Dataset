@@ -13,7 +13,7 @@ COPY requirements.txt ${BB_TOOLS_DIR}/
 
 # Prereqs
 RUN apt update \
-    && apt install -y python3 python3-pip \
+    && apt install -y python3 python3-pip vim tmux \
     && pip3 install -r ${BB_TOOLS_DIR}/requirements.txt \
     && apt clean
 

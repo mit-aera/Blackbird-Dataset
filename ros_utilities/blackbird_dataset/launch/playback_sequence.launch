@@ -27,6 +27,12 @@
       <param name="camera_frame" type="string" value="/uav/camera/left"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
     </node>
+
+    <node ns="Camera_Right_RGB" name="Camera_Right_RGB" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Right_RGB">
+      <param name="camera_frame" type="string" value="/uav/camera/right"/> 
+      <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+    </node>
   
   </group>
 
