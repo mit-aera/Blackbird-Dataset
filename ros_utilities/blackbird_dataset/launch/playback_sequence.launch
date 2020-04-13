@@ -1,0 +1,33 @@
+<launch>
+  <arg name="flight" default="ampersand/yawForward/maxSpeed2p0" />
+  <arg name="environment" default="Small_Apartment" />
+  <arg name="dataset_dir" default="/root/BlackbirdDatasetData" />  
+  <!-- Used to slow down playback of dataset -->
+  <arg name="playback_rate" default="0.5" />
+
+  <!-- Generated args from previous args -->
+  <arg name="bagfile_path" default="$(arg datasetDir)/$(arg flight)/rosbag.bag" />
+
+  <!-- ============================================ -->
+  
+  <!-- Bag playback -->
+  <node name="rosbag_playback" pkg="rosbag" type="play" args=" --delay=2  --clock --queue=1000 -r $(arg playback_rate) $(arg bagfile_path)" />
+
+  <!-- Load static transforms for sensors -->
+  <include file="$(find flightgoggles)/config/sensors/blackbirdDatasetSensors.xml">
+    <arg name="render_stereo" value="true"/>
+    <arg name="body_frame" value="body_frame"/>
+  </include>
+   
+  <!-- Start image publishers -->
+  <group ns="/uav/camera/">
+
+    <node ns="Camera_Left_RGB" name="Camera_Left_RGB" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Left_RGB">
+      <param name="camera_frame" type="string" value="/uav/camera/left"/> 
+      <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+    </node>
+  
+  </group>
+
+</launch>

@@ -4,17 +4,28 @@ FROM winterg/flightgoggles_ros:latest
 SHELL ["/bin/bash", "-c"]
 WORKDIR /root/
 
+ENV CATKIN_WS /root/catkin_ws
+ENV BB_TOOLS_DIR /root/blackbirdDatasetTools
+ENV BB_DATA_DIR /root/blackbirdDatasetData
+
 # Install Blackbird Dataset Toolchain.
-COPY requirements.txt /root/blackbird-dataset/
+COPY requirements.txt ${BB_TOOLS_DIR}/
 
 # Prereqs
 RUN apt update \
     && apt install -y python3 python3-pip \
-    && pip3 install -r /root/blackbird-dataset/requirements.txt \
+    && pip3 install -r ${BB_TOOLS_DIR}/requirements.txt \
     && apt clean
 
 # Script files
-COPY ./ /root/blackbird-dataset/
+COPY ./ ${BB_TOOLS_DIR}/
+
+# Copy ROS packages into catkin workspace
+COPY ros_utilities/ ${CATKIN_WS}/src/blackbirdDataset
+
+# Catkin build
+RUN cd ${CATKIN_WS} \
+    && catkin build
 
 # Allow for incoming ports from FG
 EXPOSE 10253/tcp
