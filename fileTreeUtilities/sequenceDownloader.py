@@ -53,6 +53,12 @@ cameras = [
     "Camera_Down_Segmented",
 ]
 
+# Files next to movie files.
+# @TODO: change this to the IJRR filename in the PDF
+# timestampFile = "nSecTimestamps.txt"
+timestampFile = "video_frame_n_sec_timestamps.txt"
+
+
 def getCamFile(camName):
     return "lossless.tar" if ("Depth" in camName or "Segmented" in camName) else "lossless.mov"
 
@@ -104,7 +110,7 @@ def downloadSequence(flight, environment, datasetFolder):
     for cam in cameras:
         download( [
             flight / environment / cam / getCamFile(cam),
-            flight / environment / cam / "video_frame_n_sec_timestamps.txt"
+            flight / environment / cam / timestampFile
         ])
 
 
