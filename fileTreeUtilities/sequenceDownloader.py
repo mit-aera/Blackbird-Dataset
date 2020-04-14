@@ -56,8 +56,6 @@ cameras = [
 # Files next to movie files.
 # @TODO: change this to the IJRR filename in the PDF
 timestampFile = "nSecTimestamps.txt"
-# timestampFile = "video_frame_n_sec_timestamps.txt"
-
 
 def getCamFile(camName):
     return "lossless.tar" if ("Depth" in camName or "Segmented" in camName) else "lossless.mov"
@@ -96,7 +94,7 @@ def downloadSequence(flight, environment, datasetFolder):
                 try:
                     wget.download(src, out=str(dest))
                 except urllib.error.HTTPError as err:
-                    print(f"{err} {src} ")
+                    print(err)
                 
             else:
                 print(f"Skipping {relPath}")
