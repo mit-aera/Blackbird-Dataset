@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>blackbird_msgs</name>
+  <name>blackbird_dataset</name>
   <version>1.0.0</version>
   <description>ROS Dependency package for the MIT BlackbirdDataset.</description>
 
