@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import sys, subprocess, glob, os, shutil
 import os.path as path
@@ -45,8 +45,8 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
             f.write(timestamp)
             f.write('\n')
 
-    print "Finished creating decoding file for ffmpeg"
-    print "Starting video encoding using ffmpeg"
+    print("Finished creating decoding file for ffmpeg")
+    print("Starting video encoding using ffmpeg")
 
     # UNUSED EXAMPLE: Uses local ffmpeg compiled with NVENC GPU compression.
     # Results in worse quality
@@ -96,11 +96,11 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     #command = "~/software/ffmpeg/ffmpeg -y " + inputSources + cameraFilter + encoderSettings + outputRateSettings + path.join(input_folder, camera_name+"_lossless.mov")
     command = docker_args + inputSources + cameraFilter + encoderSettings + outputRateSettings + "lossless.mov"
 
-    print command
+    print(command)
         
     process = subprocess.Popen(command, shell=True)
     process.wait()
-    print "Finished video encoding using ffmpeg"
+    print("Finished video encoding using ffmpeg")
 
     # Move docker-created file to final destination
     if (output_folder != input_folder):
@@ -140,14 +140,14 @@ def compressVideoTarball(input_folder, file_extension, output_folder=None):
 # For compressing tarball
 	# Run compression command
 	command = "find " + input_folder + " -name '*"+file_extension+"' -printf '%P\n' | parallel --bar gm convert " + os.path.join(input_folder,"{}") + " " + os.path.join(input_folder,"{.}.png") + " && find " + input_folder + " -name '*"+file_extension+"' -delete"  
-	print command
+	print(command)
 
 	process = subprocess.Popen(command, shell=True)
 	process.wait()
 	
 	# Tarball folder and upload to NAS. (async, erases after done)
 	command = "tar -cf "+os.path.join(output_folder,"lossless.tar")+" -C "+input_folder+" ."
-	print command
+	print(command)
 	process = subprocess.Popen(command, shell=True)
 
 

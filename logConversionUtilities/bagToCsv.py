@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 This script saves each topic in a bagfile as a csv.
@@ -20,30 +20,30 @@ import shutil #for file management, copy file
 
 #verify correct input arguments: 1 or 2
 if (len(sys.argv) > 2):
-	print "invalid number of arguments:   " + str(len(sys.argv))
-	print "should be 2: 'bag2csv.py' and 'bagName'"
-	print "or just 1  : 'bag2csv.py'"
+	print("invalid number of arguments:   " + str(len(sys.argv)))
+	print("should be 2: 'bag2csv.py' and 'bagName'")
+	print("or just 1  : 'bag2csv.py'")
 	sys.exit(1)
 elif (len(sys.argv) == 2):
 	listOfBagFiles = [sys.argv[1]]
 	numberOfFiles = "1"
-	print "reading only 1 bagfile: " + str(listOfBagFiles[0])
+	print("reading only 1 bagfile: " + str(listOfBagFiles[0]))
 elif (len(sys.argv) == 1):
 	listOfBagFiles = [f for f in os.listdir(".") if f[-4:] == ".bag"]	#get list of only bag files in current dir.
 	numberOfFiles = str(len(listOfBagFiles))
-	print "reading all " + numberOfFiles + " bagfiles in current directory: \n"
+	print("reading all " + numberOfFiles + " bagfiles in current directory: \n")
 	for f in listOfBagFiles:
-		print f
-	print "\n press ctrl+c in the next 10 seconds to cancel \n"
+		print(f)
+	print("\n press ctrl+c in the next 10 seconds to cancel \n")
 	time.sleep(10)
 else:
-	print "bad argument(s): " + str(sys.argv)	#shouldnt really come up
+	print("bad argument(s): " + str(sys.argv))	#shouldnt really come up
 	sys.exit(1)
 
 count = 0
 for bagFile in listOfBagFiles:
 	count += 1
-	print "reading file " + str(count) + " of  " + numberOfFiles + ": " + bagFile
+	print("reading file " + str(count) + " of  " + numberOfFiles + ": " + bagFile)
 	#access bag
 	bag = rosbag.Bag(bagFile)
 	bagContents = bag.read_messages()
@@ -97,4 +97,4 @@ for bagFile in listOfBagFiles:
 						values.append(pair[1])
 				filewriter.writerow(values)
 	bag.close()
-print "Done reading all " + numberOfFiles + " bag files."
+print("Done reading all " + numberOfFiles + " bag files.")

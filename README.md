@@ -2,9 +2,9 @@
 
 <!-- [![Video Link](https://img.youtube.com/vi/_VBww8YQuA8/0.jpg)](https://www.youtube.com/watch?v=_VBww8YQuA8) -->
 
-The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.mit.edu) at the [MIT FAST Lab](http://karaman.mit.edu/group.html) and has been published in the proceedings of ISER 2018 [(arXiv link)](https://arxiv.org/abs/1810.01987). 
+The Blackbird Dataset was created by [MIT AERA](http://agiledrones.mit.edu) and has been published in the International Journal of Robotics Research [(IJRR link)](https://doi.org/10.1177/0278364920908331) and in the proceedings of ISER 2018 [(arXiv link)](https://arxiv.org/abs/1810.01987). 
 
-
+**NOTE: Currently, some pre-rendered sequences are unavailable for download. We are working to rectify this as soon as possible.**
 
 ## Preview the Dataset
 
@@ -53,10 +53,42 @@ The Blackbird Dataset was created by the [AgileDrones group](http://agiledrones.
 
 \* Calibration flights for dynamics, no camera data available.
 
+## Quickstart Example Using Docker
+
+This Docker quickstart image allows for easy downloading and playing back a sample sequence from the Blackbird Dataset. 
+This quickstart example assumes that the user has Docker installed, but can be adapted for use with a local ROS install.
+
+```bash
+# Set storage location on host computer for a portion of the dataset.
+HOST_STORAGE_DIR="$HOME/BlackbirdDatasetData"
+# Define this env variable for simplicity of commands
+BB_DATA_DIR="/root/BlackbirdDatasetData"
+
+# Download & open a bash terminal in quickstart docker image
+docker run -it --rm \
+    -v "$HOST_STORAGE_DIR":"$BB_DATA_DIR" \
+    -p 10253-10263:10253-10263 \
+    winterg/flightgoggles_ros:ijrr \
+    /bin/bash
+
+##### In the docker terminal.
+# Download a pre-rendered sequence (env variables are pre-populated by Dockerfile)
+FLIGHT="ampersand/yawForward/maxSpeed2p0/"
+ENVIRONMENT="Small_Apartment"
+$BB_TOOLS_DIR/fileTreeUtilities/sequenceDownloader.py --flight=$FLIGHT --environment=$ENVIRONMENT --datasetFolder=$BB_DATA_DIR
+
+# Start playback of the sequence
+cd CATKIN_WS/src 
+roslaunch blackbird_dataset playback_sequence.launch \
+    flight:=$FLIGHT \
+    environment:=$ENVIRONMENT \
+    datasetDir:=$BB_DATA_DIR
+```
+
 
 ## Download the Dataset
 
-All dataset files can be downloaded from http://blackbird-dataset.mit.edu/BlackbirdDatasetData/
+All dataset files can be downloaded from http://blackbird-dataset.mit.edu/BlackbirdDatasetData/ using the helper script `fileTreeUtilities/sequenceDownloader.py` included in this repo.
 
 **Note: the full dataset is quite large (4.9TB). However, chunks of the dataset can be downloaded separately for testing purposes.**
 
@@ -80,10 +112,35 @@ catkin build
 ## Citation
 If you find this work useful for your research, please cite:
 ```bibtex
+@article{antoniniIJRRblackbird,
+  title ={The Blackbird UAV dataset},
+  journal = {The International Journal of Robotics Research},
+  author = {
+    Antonini, Amado and 
+    Guerra, Winter and 
+    Murali, Varun and 
+    Sayre-McCord, Thomas and 
+    Karaman, Sertac},
+  volume = {0},
+  number = {0},
+  pages = {0278364920908331},
+  year = {0},
+  doi = {10.1177/0278364920908331},
+  URL = { https://doi.org/10.1177/0278364920908331 },
+  eprint = { https://doi.org/10.1177/0278364920908331 }
+}
+
 @inproceedings{antonini2018blackbird,
   title={The Blackbird Dataset: A large-scale dataset for UAV perception in aggressive flight},
-  author={Antonini, Amado and Guerra, Winter and Murali, Varun and Sayre-McCord, Thomas and Karaman, Sertac},
   booktitle={2018 International Symposium on Experimental Robotics (ISER)},
+  author={
+    Antonini, Amado and 
+    Guerra, Winter and 
+    Murali, Varun and 
+    Sayre-McCord, Thomas and 
+    Karaman, Sertac},
+  doi={10.1007/978-3-030-33950-0_12},
+  URL={ https://doi.org/10.1007/978-3-030-33950-0_12 },  
   year={2018}
 }
 ```

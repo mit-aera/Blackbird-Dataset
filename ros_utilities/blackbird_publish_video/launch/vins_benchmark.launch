@@ -1,3 +1,0 @@
-<launch>
-  <node type="vins_node" pkg="vins" name="vins_estimator" output="screen" args="/root/catkin_ws/src/VINS-Fusion/config/euroc/euroc_stereo_config.yaml"/>
-</launch>

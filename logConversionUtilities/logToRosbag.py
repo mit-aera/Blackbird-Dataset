@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 """Process lcm log and write it to a rosbag file according to a json configuration file."""
 __author__ = "Amado Antonini"
@@ -52,7 +52,7 @@ class RosbagWriter:
 
     def __exit__(self, exc_type, exc_value, traceback):
         if self.verbose:
-            print("Wrote rosbag to %s" % self.bag_path)
+            print(("Wrote rosbag to %s" % self.bag_path))
         self.bag.close()
 
     def write_message(self, channel, data):
@@ -76,7 +76,7 @@ class RosbagWriter:
 
     def unknown_channel(self, channel, _):
         if self.verbose:
-            print("Warning: Writer for channel '%s' has not been implemented, skipping." % channel)
+            print(("Warning: Writer for channel '%s' has not been implemented, skipping." % channel))
 
 
 def process_one_log(args):
@@ -175,7 +175,7 @@ def process_logs(settings_file):
     log_list = [f for f in glob2.glob(os.path.join(dir_lcm_logs,'**/*.log'))]
     num_logs = len(log_list)
 
-    print("Converting %r logs from %s to %s" % (num_logs, dir_lcm_logs, dir_rosbags))
+    print(("Converting %r logs from %s to %s" % (num_logs, dir_lcm_logs, dir_rosbags)))
 
     # Helper function for parallel processing
     def getArgsForParallelMap(logname):
@@ -213,7 +213,7 @@ def process_logs(settings_file):
     #     print csv_path
     #     process_one_log((log_path, rosbag_path, csv_path, dir_settings))
 
-    print("Done writing logs to %s ." % dir_rosbags)
+    print(("Done writing logs to %s ." % dir_rosbags))
 
 
 if __name__ == '__main__':
