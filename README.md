@@ -60,9 +60,12 @@ This quickstart example assumes that the user has Docker installed, but can be a
 
 ```bash
 # Set storage location on host computer for a portion of the dataset.
-HOST_STORAGE_DIR="$HOME/BlackbirdDatasetData"
+HOST_STORAGE_DIR="$HOME/blackbirdDatasetData"
 # Define this env variable for simplicity of commands
-BB_DATA_DIR="/root/BlackbirdDatasetData"
+BB_DATA_DIR="/root/blackbirdDatasetData"
+
+# Make folder for dataset storage
+mkdir -p $HOST_STORAGE_DIR
 
 # Download & open a bash terminal in quickstart docker image
 docker run -it --rm \
@@ -73,8 +76,8 @@ docker run -it --rm \
 
 ##### In the docker terminal.
 # Download a pre-rendered sequence (env variables are pre-populated by Dockerfile)
-FLIGHT="ampersand/yawForward/maxSpeed2p0/"
-ENVIRONMENT="Small_Apartment"
+FLIGHT="egg/yawConstant/maxSpeed13p8"
+ENVIRONMENT="Ancient_Asia_Museum_Multiroom"
 $BB_TOOLS_DIR/fileTreeUtilities/sequenceDownloader.py --flight=$FLIGHT --environment=$ENVIRONMENT --datasetFolder=$BB_DATA_DIR
 
 # Start playback of the sequence

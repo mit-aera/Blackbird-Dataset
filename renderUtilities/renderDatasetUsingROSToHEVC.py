@@ -18,6 +18,15 @@ defaultPlaybackRate = 0.05 # For 2x RGBD feeds
 #defaultTrajectoryList = [ "egg", "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star", "cameraCalibration"]
 defaultTrajectoryList = [ "egg", "sphinx", "halfMoon", "oval", "ampersand", "dice", "bentDice", "thrice", "tiltedThrice", "winter", "clover", "mouse", "patrick", "picasso", "sid", "star"]
 
+def bagInWhitelist(bag, whitelist):
+    returnCode = False
+    if (whitelist):
+        for f in whitelist:
+            returnCode |= bag in f
+    else:
+        returnCode = True
+    return returnCode
+
 def runRendersOnDataset(datasetFolder, renderDir, renderPrefix, trajectoryFolders = defaultTrajectoryList, experimentList = [], bagfileWhitelistFile=None):
 
     devnull = open(os.devnull, 'wb') #python >= 2.4
@@ -56,15 +65,14 @@ def runRendersOnDataset(datasetFolder, renderDir, renderPrefix, trajectoryFolder
                 # print bagFiles
 
                 # Check that this bagfile is on the whitelist
-                if (bagfileWhitelistFile):
-                    bagFiles = [f for f in bagFiles if os.path.join(os.path.dirname(f), experiment["name"]) in bagfileWhitelist]
-                print bagFiles
-                
-                #bagFiles = [traj for traj in bagFiles if fileName in traj]
-                # print bagFiles
+                # Whitelist is of form: /BlackbirdDatasetData/oval/yawConstant/maxSpeed4p0/Small_Apartment
+                # Bagfile is of form: /BlackbirdDatasetData/oval/yawConstant/maxSpeed4p0/rosbag.bag
 
                 # Render these trajectories
                 for bagFile in bagFiles:
+
+                    if (not bagInWhitelist(bagFile, bagfileWhitelist)):
+                        continue
 
                     print("========================================")
                     print("Starting rendering of: " + bagFile)
