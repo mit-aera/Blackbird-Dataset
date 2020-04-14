@@ -55,8 +55,8 @@ cameras = [
 
 # Files next to movie files.
 # @TODO: change this to the IJRR filename in the PDF
-# timestampFile = "nSecTimestamps.txt"
-timestampFile = "video_frame_n_sec_timestamps.txt"
+timestampFile = "nSecTimestamps.txt"
+# timestampFile = "video_frame_n_sec_timestamps.txt"
 
 
 def getCamFile(camName):

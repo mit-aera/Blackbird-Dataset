@@ -4,6 +4,8 @@
 
 The Blackbird Dataset was created by [MIT AERA](http://agiledrones.mit.edu) and has been published in the International Journal of Robotics Research [(IJRR link)](https://doi.org/10.1177/0278364920908331) and in the proceedings of ISER 2018 [(arXiv link)](https://arxiv.org/abs/1810.01987). 
 
+**NOTE: Currently, some pre-rendered sequences are unavailable for download. We are working to rectify this as soon as possible.**
+
 ## Preview the Dataset
 
 | Yaw Forward Trajectories<br>*Click for preview video*                                        |||||||||
