@@ -12,6 +12,7 @@ GRAY_FOLDERS=`find -L $1 -iname "*Left_Gray"`
 echo "" > badGrayRenders.txt
 echo "" > badGTTimestampFiles.txt
 echo "" > goodNewRenders.txt
+echo "" > goodOriginals.txt
 echo "" > badNewRenders.txt
 
 # For each folder:
@@ -40,28 +41,28 @@ for GRAY_FOLDER in $GRAY_FOLDERS; do
   EXPECTED_60_FRAMES=$(( GT_NUM_FRAMES * 590 / 1200 )) # 59FPS nominal
   
   # Check that Current RGB & Depth renders have the correct number of frames
-  GRAY_NUM_IMAGES=`wc -l < ${FINAL_FOLDER_DEST}/${CAMERA}_Gray/video_frame_n_sec_timestamps.txt`
+  GRAY_NUM_IMAGES=`wc -l < ${FINAL_FOLDER_DEST}/${CAMERA}_Gray/nSecTimestamps.txt`
   
 
   # Check that the new renders have the correct number of frames (if folder exists)
   NEW_RGB_NUM_IMAGES=0
   if [[ -d $NEW_FOLDER && -f ${FINAL_FOLDER_DEST}/${CAMERA}_Depth/lossless.tar ]]; then
     # Check number of new images
-    NEW_RGB_NUM_IMAGES=`wc -l < ${NEW_FOLDER}/video_frame_n_sec_timestamps.txt`
+    NEW_RGB_NUM_IMAGES=`wc -l < ${NEW_FOLDER}/nSecTimestamps.txt`
   fi
     
   # Check that the new renders have the correct number of frames (if folder exists)
   RGB_NUM_IMAGES=0
   if [[ -d ${FINAL_FOLDER_DEST}/${CAMERA}_RGB && -f ${FINAL_FOLDER_DEST}/${CAMERA}_RGB/lossless.mov ]]; then
     # Check number of new images
-    RGB_NUM_IMAGES=`wc -l < ${FINAL_FOLDER_DEST}/${CAMERA}_RGB/video_frame_n_sec_timestamps.txt`
+    RGB_NUM_IMAGES=`wc -l < ${FINAL_FOLDER_DEST}/${CAMERA}_RGB/nSecTimestamps.txt`
   fi
 
   # Check that the new renders have the correct number of frames (if folder exists & tarballs exist)
   DEPTH_NUM_IMAGES=0
   if [[ -d ${FINAL_FOLDER_DEST}/${CAMERA}_Depth && -f ${FINAL_FOLDER_DEST}/${CAMERA}_Depth/lossless.tar ]]; then
     # Check number of new images
-    DEPTH_NUM_IMAGES=`wc -l < ${FINAL_FOLDER_DEST}/${CAMERA}_Depth/video_frame_n_sec_timestamps.txt`
+    DEPTH_NUM_IMAGES=`wc -l < ${FINAL_FOLDER_DEST}/${CAMERA}_Depth/nSecTimestamps.txt`
   fi
 
   echo "Min 60Hz Frames from GT: $EXPECTED_60_FRAMES, Orig Gray: $GRAY_NUM_IMAGES, Orig RGB: $RGB_NUM_IMAGES, Orig Depth: $DEPTH_NUM_IMAGES, New: $NEW_RGB_NUM_IMAGES"
@@ -79,6 +80,7 @@ for GRAY_FOLDER in $GRAY_FOLDERS; do
   if (( "$GRAY_NUM_IMAGES" >= "$EXPECTED_120_FRAMES" )) && (( "$RGB_NUM_IMAGES" >= "$EXPECTED_60_FRAMES" )) && (( "$DEPTH_NUM_IMAGES" == "$RGB_NUM_IMAGES" )); then
     # THE ORIGINALS ARE GOOD!
     echo Good!
+    echo "$FINAL_FOLDER_DEST" >> goodOriginals.txt
   elif (( "$GRAY_NUM_IMAGES" >= "$EXPECTED_120_FRAMES" )) && (( "$NEW_RGB_NUM_IMAGES" >= "$EXPECTED_60_FRAMES" )); then
     # The new renders are good!
     echo Good!

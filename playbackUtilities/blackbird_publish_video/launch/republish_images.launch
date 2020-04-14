@@ -8,7 +8,7 @@
   <arg name="speed" default="5p0"/>
   <arg name="yaw" default="Forward"/>
 
-  <arg name="timestamp_file_name" default="video_frame_n_sec_timestamps.txt"/>
+  <arg name="timestamp_file_name" default="nSecTimestamps.txt"/>
   <arg name="video_name" default="lossless.mov"/>
   <arg name="bagfile_path" default="/"/>
 

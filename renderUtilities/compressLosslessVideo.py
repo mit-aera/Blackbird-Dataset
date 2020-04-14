@@ -37,7 +37,7 @@ def compressLosslessVideo(input_folder, file_extension, output_folder=None):
     fps = len(files)/(getTimestampFromString(files[-1]) - getTimestampFromString(files[0]))
 
     # Log image timestamps in video
-    decoding_path = path.join(output_folder, "video_frame_n_sec_timestamps.txt")
+    decoding_path = path.join(output_folder, "nSecTimestamps.txt")
     with open(decoding_path, "w") as f:
         for fileString in files:
             # convert string to a nanosecond timestamp.
@@ -128,7 +128,7 @@ def compressVideoTarball(input_folder, file_extension, output_folder=None):
     fps = len(files)/(getTimestampFromString(files[-1]) - getTimestampFromString(files[0]))
 
     # Log image timestamps in video
-    decoding_path = path.join(output_folder, "video_frame_n_sec_timestamps.txt")
+    decoding_path = path.join(output_folder, "nSecTimestamps.txt")
     with open(decoding_path, "w") as f:
         for fileString in files:
             # convert string to a nanosecond timestamp.

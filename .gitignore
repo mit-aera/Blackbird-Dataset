@@ -1,3 +1,6 @@
+# Ignore temp files
+*.txt
+
 # Ignore data folders
 data
 BlackbirdDatasetData

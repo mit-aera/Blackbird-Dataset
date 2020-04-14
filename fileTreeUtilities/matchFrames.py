@@ -16,7 +16,7 @@ rgbCameraList = ["Camera_Left_RGB", "Camera_Down_RGB"]
 depthCameraList = ["Camera_Left_Depth", "Camera_Down_Depth"]
 allCameraList = rgbCameraList + depthCameraList
 
-timestampFileName = "video_frame_n_sec_timestamps.txt"
+timestampFileName = "nSecTimestamps.txt"
 fpsCuttoff = 59.0
 
 def getTimestampSetForCamera(cameraName, renderLocation):
@@ -86,7 +86,7 @@ def main(renderLocation, dryrun=True):
         stats["listOfDeletionsForAllCameras"] = [ camSet - stats["RGBDTimestampSet"] for camSet in stats["listOfOriginalTimestampSets"] ]
 
     # DEBUG: Print plan
-    if (not oldStats["passesChecks"] and not newStats["passesChecks"]):
+    if (not oldStats["passesChecks"]):
         # This experiment MUST be rerendered.
         for stats in [oldStats, newStats]:
             print(stats["parentDir"])
@@ -101,8 +101,9 @@ def main(renderLocation, dryrun=True):
         
         return
 
-    # Execute plan on tarballs/movs
-
+    # Execute plan on tarballs/movs if needed
+    if (oldStats["passesChecks"] and sum([len(s) for s in oldStats["listOfDeletionsForAllCameras"]])):
+        print(f"FIX: {oldStats['parentDir']}")
 
 if __name__ == '__main__':
       fire.Fire(main)
