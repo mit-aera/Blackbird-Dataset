@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Winter Guerra <winterg@mit.edu>
 # August 3nd, 2018
@@ -26,8 +26,8 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
     # print config["unitySettings"]
 #    trajectoryFolders = [ traj for traj in config["unitySettings"].keys()]
 
-    print "Rendering the following trajectories: "
-    print trajectoryFolders
+    print("Rendering the following trajectories: ")
+    print(trajectoryFolders)
 
     for trajectoryFolder in trajectoryFolders:
         
@@ -56,8 +56,8 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
                 # Render these trajectories
                 for bagFile in bagFiles:
 
-                    print "========================================"
-                    print "Starting rendering of: " + bagFile
+                    print("========================================")
+                    print("Starting rendering of: " + bagFile)
                      
                     bagPathStem = bagFile[:-4]
                     bagDirectory = os.path.dirname(bagFile)
@@ -95,7 +95,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
                     
                     command = "roslaunch flightgoggles blackbirdDataset.launch bagfile_path:='{}' output_folder:='{}' timestampfile_path:='{}' scene_filename:='{}' trajectory_offset_transform:='{}' render_offset_rotation:='{}' render_offset_translation:='{}'".format(bagFile, renderDir, timestampFile, experiment["environment"], trajectoryOffsetString, " ".join(map(str,renderOffsetRotation)), " ".join(map(str,renderOffsetTranslation)))
 
-                    print command
+                    print(command)
 
                     process = subprocess.Popen(command, shell=True) #, stdout=devnull)
                     process.wait()
@@ -103,14 +103,14 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
                     # Loop through output folders and compress files (in parallel).
                     def compressVideo(_folder_name):
                         subfolder_name = _folder_name.split('/')[-2]
-                        print subfolder_name
+                        print(subfolder_name)
 
                         # Compress files and move to final destination
                         if ("Segmented" in subfolder_name):
-                            print "Compressing Segmentation image feed to PNG tarball"
+                            print("Compressing Segmentation image feed to PNG tarball")
                             compressVideoTarball(_folder_name, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))           
                         else:
-                            print "Compressing RGB/Gray/Depth image feed to lossless HEVC"
+                            print("Compressing RGB/Gray/Depth image feed to lossless HEVC")
                             compressLosslessVideo(_folder_name, ".ppm", output_folder=os.path.join(outputDir, subfolder_name))           
 
                     #p = Pool()
@@ -119,7 +119,7 @@ def runRendersOnDataset(datasetFolder, renderDir, render_prefix, trajectoryFolde
                     for d in glob.glob(os.path.join(renderDir, "*/")):
                         compressVideo(d)
                     
-                    print "Finished rendering of: " + bagFile
+                    print("Finished rendering of: " + bagFile)
 
                     time.sleep(2)
 

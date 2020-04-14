@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(blackbird_publish_video)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -14,7 +14,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-find_package(OpenCV REQUIRED)
+# Find OpenCV
+find_package(OpenCV 3 REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
