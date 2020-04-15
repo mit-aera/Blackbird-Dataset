@@ -1,18 +1,17 @@
 <launch>
-  <arg name="flight" default="ampersand/yawForward/maxSpeed2p0" />
-  <arg name="environment" default="Small_Apartment" />
-  <arg name="dataset_dir" default="/root/BlackbirdDatasetData" />  
+  <arg name="flight" default="clover/yawForward/maxSpeed5p0" />
+  <arg name="environment" default="Large_Apartment_Night_Near_Couches" />
+  <arg name="datasetDir" default="/root/blackbirdDatasetData" />  
   <!-- Used to slow down playback of dataset -->
-  <arg name="playback_rate" default="0.5" />
+  <arg name="playback_rate" default="0.25" />
 
   <!-- Generated args from previous args -->
   <arg name="bagfile_path" default="$(arg datasetDir)/$(arg flight)/rosbag.bag" />
 
   <!-- ============================================ -->
+  <!-- Use sim time -->
+  <param name ="/use_sim_time" value="true"/>
   
-  <!-- Bag playback -->
-  <node name="rosbag_playback" pkg="rosbag" type="play" args=" --delay=2  --clock --queue=1000 -r $(arg playback_rate) $(arg bagfile_path)" />
-
   <!-- Load static transforms for sensors -->
   <include file="$(find flightgoggles)/config/sensors/blackbirdDatasetSensors.xml">
     <arg name="render_stereo" value="true"/>
@@ -22,18 +21,82 @@
   <!-- Start image publishers -->
   <group ns="/uav/camera/">
 
-    <node ns="Camera_Left_RGB" name="Camera_Left_RGB" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
-      <param name="camera_name" value="Camera_Left_RGB">
+
+    <!-- Grayscale Cameras -->
+    <node name="Camera_Left_Gray" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Left_Gray"/>
       <param name="camera_frame" type="string" value="/uav/camera/left"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <param name="is_color" value="0" />
+      <remap from="~/camera_trigger" to="/camera_l/camera_info"/>
     </node>
 
-    <node ns="Camera_Right_RGB" name="Camera_Right_RGB" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
-      <param name="camera_name" value="Camera_Right_RGB">
+    <node name="Camera_Right_Gray" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Right_Gray"/>
+      
       <param name="camera_frame" type="string" value="/uav/camera/right"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <param name="is_color" value="0" />
+      <remap from="~/camera_trigger" to="/camera_r/camera_info"/>
     </node>
+
+    <!-- <node name="Camera_Down_Gray" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Down_Gray"/>
+      <param name="camera_frame" type="string" value="/uav/camera/down"/> 
+      <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <param name="is_color" value="0" />
+      <remap from="~/camera_trigger" to="/camera_d/camera_info"/>
+    </node> -->
+
+    <!-- RGB Cameras -->
+    <node name="Camera_Left_RGB" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Left_RGB"/>
+      <param name="camera_frame" type="string" value="/uav/camera/left"/> 
+      <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <remap from="~/camera_trigger" to="/camera_l/camera_info"/>
+    </node>
+
+    <!-- <node name="Camera_Down_RGB" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Down_RGB"/>
+      <param name="camera_frame" type="string" value="/uav/camera/down"/> 
+      <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <remap from="~/camera_trigger" to="/camera_d/camera_info"/>
+    </node> -->
+
+    <!-- Depth Cameras (require reading from png files.) -->
+    <!-- <node name="Camera_Left_Depth" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Left_Depth"/>
+      <param name="camera_frame" type="string" value="/uav/camera/left"/> 
+      <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <remap from="~/camera_trigger" to="/camera_l/camera_info"/>
+    </node>
+
+    <node name="Camera_Down_Depth" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Down_Depth"/>
+      <param name="camera_frame" type="string" value="/uav/camera/down"/> 
+      <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <remap from="~/camera_trigger" to="/camera_d/camera_info"/>
+    </node> -->
+
+    <!-- Segmentation Cameras (require reading from png files.) -->
+    <!-- <node name="Camera_Left_Segmented" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Left_Segmented"/>
+      <param name="camera_frame" type="string" value="/uav/camera/left"/> 
+      <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <remap from="~/camera_trigger" to="/camera_l/camera_info"/>
+    </node>
+
+    <node ns="Camera_Down_Segmented" name="Camera_Down_Segmented" pkg="blackbird_publish_video" type="blackbird_publish_video_node"  >
+      <param name="camera_name" value="Camera_Down_Segmented"/>
+      <param name="camera_frame" type="string" value="/uav/camera/down"/> 
+      <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <remap from="~/camera_trigger" to="/camera_d/camera_info"/>
+    </node> -->
   
   </group>
+
+  <!-- Bag playback -->
+  <node name="rosbag_playback" pkg="rosbag" type="play" args=" --delay=2  --clock --queue=1000 -r $(arg playback_rate) $(arg bagfile_path)" />
+
 
 </launch>

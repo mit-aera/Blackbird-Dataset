@@ -83,13 +83,14 @@ public:
     {
       _timestamps.push_back(stamp_ns);
     }
+    ROS_INFO("Loaded timestamps %d", (int)_timestamps.size());
 
     _capPtr.reset(new cv::VideoCapture(video_file_name.str()));
 
     _pub = _it.advertise(_output_channel_name, 10);
-    // _info_pub = _nh.advertise<sensor_msgs::CameraInfo>("camera_info", 10);
+    _info_pub = _nh.advertise<sensor_msgs::CameraInfo>("camera_info", 10);
 
-    _info_sub = _nh.subscribe("camera_info", 10, &republishImages::cb_camera, this);
+    _info_sub = _nh.subscribe("camera_trigger", 10, &republishImages::cb_camera, this);
 
     ROS_INFO("Finished reading timestamp file");
   };
@@ -107,9 +108,11 @@ public:
 
     // Only publish an image if the camera_info message timestamp matches a timestamp in the .mov file.
     uint64_t camera_info_timestamp = ((uint64_t)(msg->header.stamp.sec * 1e9) + (uint64_t)msg->header.stamp.nsec);
+
     if (!std::binary_search(_timestamps.begin(), _timestamps.end(), camera_info_timestamp))
       return;
-    while (_timestamps.at(_counter) != camera_info_timestamp)
+
+    while (_timestamps.at(_counter) <= camera_info_timestamp)
     {
       *_capPtr >> _frame;
       _counter++;
@@ -131,11 +134,11 @@ public:
       _msg->header.frame_id = _camera_frame;
 
       // Create camera info
-      // sensor_msgs::CameraInfo cameraInfoMsg = *msg;
-      // cameraInfoMsg.header.frame_id = _msg->header.frame_id;
+      sensor_msgs::CameraInfo cameraInfoMsg = *msg;
+      cameraInfoMsg.header.frame_id = _msg->header.frame_id;
 
+      _info_pub.publish(cameraInfoMsg);
       _pub.publish(_msg);
-      // _info_pub.publish(cameraInfoMsg);
       _lastTimestamp = msg->header.stamp.toSec();
     }
   }
