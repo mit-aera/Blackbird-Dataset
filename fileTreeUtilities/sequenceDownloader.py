@@ -7,7 +7,7 @@ April 13th, 2020
 Usage: sequenceDownloader.py -flight ampersand/yawForward/maxSpeed2p0/ -environment Small_Apartment -datasetFolder ~/BlackbirdDatasetData
 '''
 
-import fire, wget, urllib
+import fire, wget, urllib, shutil, os
 from pathlib import Path
 
 # S3 address as URI (yes, /// is on purpose)
@@ -87,14 +87,21 @@ def downloadSequence(flight, environment, datasetFolder):
             src = "http://" + str(serverAddress / relPath)
             # Make sure that directory exists
             dest.parent.mkdir(parents=True, exist_ok=True)
-            # Check that the file does not already exist
-            if (not dest.exists()):
+            # Check that the file or extracted directory does not already exist
+            if ( ( dest.suffix != ".tar" and not dest.exists() ) or ( dest.suffix == ".tar" and not dest.with_name("images").exists() ) ):
+                    
                 # Download the file
                 print(f"Downloading {relPath}")
                 try:
                     wget.download(src, out=str(dest))
                 except urllib.error.HTTPError as err:
                     print(err)
+
+                # If needed, extract the file
+                if (dest.suffix == ".tar"):
+                    print("Extracting tarball")
+                    shutil.unpack_archive(dest, extract_dir=dest.with_name("images"))
+                    os.remove(dest)
                 
             else:
                 print(f"Skipping {relPath}")

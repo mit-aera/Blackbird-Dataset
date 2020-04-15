@@ -76,13 +76,12 @@ docker run -it --rm \
 
 ##### In the docker terminal.
 # Download a pre-rendered sequence (env variables are pre-populated by Dockerfile)
-FLIGHT="egg/yawConstant/maxSpeed13p8"
-ENVIRONMENT="Ancient_Asia_Museum_Multiroom"
+FLIGHT="clover/yawForward/maxSpeed5p0"
+ENVIRONMENT="Large_Apartment_Night_Near_Couches"
 $BB_TOOLS_DIR/fileTreeUtilities/sequenceDownloader.py --flight=$FLIGHT --environment=$ENVIRONMENT --datasetFolder=$BB_DATA_DIR
 
 # Start playback of the sequence
-cd CATKIN_WS/src 
-roslaunch blackbird_dataset playback_sequence.launch \
+roslaunch blackbird playback_sequence.launch \
     flight:=$FLIGHT \
     environment:=$ENVIRONMENT \
     datasetDir:=$BB_DATA_DIR

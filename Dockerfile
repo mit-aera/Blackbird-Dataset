@@ -32,6 +32,9 @@ COPY ros_utilities/ ${CATKIN_WS}/src/blackbirdDataset
 
 # Catkin build
 RUN cd ${CATKIN_WS} \
+    && catkin clean -y \
+    && source /opt/ros/kinetic/setup.bash \
+    && catkin config --cmake-args -DFLIGHTGOGGLES_DOWNLOAD_BINARY=OFF -DCMAKE_BUILD_TYPE=Release \
     && catkin build
 
 # Allow for incoming ports from FG
