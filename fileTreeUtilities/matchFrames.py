@@ -14,7 +14,8 @@ import fire, os
 
 rgbCameraList = ["Camera_Left_RGB", "Camera_Down_RGB"]
 depthCameraList = ["Camera_Left_Depth", "Camera_Down_Depth"]
-allCameraList = rgbCameraList + depthCameraList
+segCameraList = ["Camera_Left_Segmented", "Camera_Down_Segmented"]
+allCameraList = rgbCameraList + depthCameraList + segCameraList
 
 timestampFileName = "nSecTimestamps.txt"
 fpsCuttoff = 59.0
@@ -22,6 +23,10 @@ fpsCuttoff = 59.0
 def getTimestampSetForCamera(cameraName, renderLocation):
     timestampFilePath = os.path.join(renderLocation, cameraName, timestampFileName)
     timestamp = np.loadtxt(timestampFilePath, dtype=np.int64)
+    
+    # If there is no .mov or .tar file alongside the timestamp file, zero out the timestamps.
+    if ( not os.path.exists(os.path.join(renderLocation, cameraName, "lossless.tar")) and not os.path.exists(os.path.join(renderLocation, cameraName, "lossless.mov"))):
+        timestamp = np.array([])
     
     return set(timestamp)
 
@@ -32,6 +37,8 @@ def getNewRenderLocation(renderLocation):
 
 
 def getFPSFromTimestampSet(tsSet):
+    if (not len(tsSet)):
+        return 0.0
     # Timestamps are in ns
     _max = max(tsSet)
     _min = min(tsSet)
@@ -87,6 +94,7 @@ def main(renderLocation, dryrun=True):
 
     # DEBUG: Print plan
     if (not oldStats["passesChecks"]):
+        print(f"BAD: {oldStats['parentDir']}")
         # This experiment MUST be rerendered.
         for stats in [oldStats, newStats]:
             print(stats["parentDir"])
@@ -102,8 +110,12 @@ def main(renderLocation, dryrun=True):
         return
 
     # Execute plan on tarballs/movs if needed
-    if (oldStats["passesChecks"] and sum([len(s) for s in oldStats["listOfDeletionsForAllCameras"]])):
-        print(f"FIX: {oldStats['parentDir']}")
+    if (oldStats["passesChecks"]):
+        if (sum([len(s) for s in oldStats["listOfDeletionsForAllCameras"]])):
+            print(f"FIX: {oldStats['parentDir']}")
+        else:
+            print(f"GOOD: {oldStats['parentDir']}")
+
 
 if __name__ == '__main__':
       fire.Fire(main)
