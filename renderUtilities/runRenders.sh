@@ -7,4 +7,4 @@
 #./renderDatasetUsingROSToHEVC.py /media/medusa/RAID/IJRRBlackbirdDataset/v2/BlackbirdDatasetData/ /home/medusa/render_temp/ "_120hz_try_4" 121
 
 
-./renderDatasetUsingROSToHEVC.py --datasetFolder /root/BlackbirdDatasetData/ --renderDir /mnt/SSD/render_temp --renderPrefix "ijrr_new_full_suite_4" --bagfileWhitelistFile "rerenderList.txt"
+./renderDatasetUsingROSToHEVC.py --datasetFolder /root/blackbirdDatasetData/ --renderDir /mnt/ssd/render_temp --renderPrefix "ijrr_rgb_seg_1" --bagfileWhitelistFile="rerenderList.txt"
