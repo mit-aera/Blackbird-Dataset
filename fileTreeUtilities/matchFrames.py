@@ -65,7 +65,7 @@ def validateNewTimestampSet(RGBDTimestampSet):
 def removeFramesFromTarball(cameraName, timestampsToRemove, renderLocation):
     pass
 
-def main(renderLocation, dryrun=True):
+def checkRender(renderLocation, dryrun=True):
     # Clean up the input path
     renderLocation = os.path.realpath(renderLocation)
     newRenderLocation = getNewRenderLocation(renderLocation)
@@ -94,12 +94,16 @@ def main(renderLocation, dryrun=True):
 
     # DEBUG: Print plan
     if (not oldStats["passesChecks"]):
-        print(f"BAD: {oldStats['parentDir']}")
+        
         # This experiment MUST be rerendered.
         for stats in [oldStats, newStats]:
             print(stats["parentDir"])
-            if ("listOfOriginalTimestampSets" in stats.keys()): 
-                [print(f"{_camName}: {len(_originals)} frames, {len(_deletions)} deletions") for _camName,_originals,_deletions in zip(allCameraList, stats["listOfOriginalTimestampSets"], stats["listOfDeletionsForAllCameras"]) if getFPSFromTimestampSet(_originals) < fpsCuttoff ]
+            if ("listOfOriginalTimestampSets" in stats.keys()):
+                for _camName,_originals,_deletions in zip(allCameraList, stats["listOfOriginalTimestampSets"], stats["listOfDeletionsForAllCameras"]):
+                    if getFPSFromTimestampSet(_originals) < fpsCuttoff:
+                        # This camera must be rerendered.
+                        print(f"Bad {_camName} {oldStats['parentDir']}")
+                #[print(f"{_camName}: {len(_originals)} frames, {len(_deletions)} deletions") for _camName,_originals,_deletions in zip(allCameraList, stats["listOfOriginalTimestampSets"], stats["listOfDeletionsForAllCameras"]) if getFPSFromTimestampSet(_originals) < fpsCuttoff ]
             else:
                 print("Renders not found.")
         
@@ -117,6 +121,13 @@ def main(renderLocation, dryrun=True):
             print(f"GOOD: {oldStats['parentDir']}")
 
 
+def main(datasetLocation, dryrun=True):
+    # Find folders with 120hzTimestamp files.
+    datasetLocation = os.path.realpath(datasetLocation)
+    renderFolders = [ f.parent for f in Path(datasetLocation).glob('**/120hzTimestamps.csv')]
+
+    ( passed, failedRGBSeg, failedDepth, failedOther ) = [ checkRender() ]
+
 if __name__ == '__main__':
-      fire.Fire(main)
+      fire.Fire(checkRender)
 
