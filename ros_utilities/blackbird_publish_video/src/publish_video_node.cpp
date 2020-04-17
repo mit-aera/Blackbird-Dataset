@@ -19,7 +19,7 @@ class republishImages
   std::string _ros_image_format;
   int _cv_image_format;
 
-  bool _is_color;
+  int _camera_type;
 
   // Frame to grab the frame from the camera
   cv::Mat _frame;
@@ -62,13 +62,42 @@ public:
     _nh.getParam("input_folder", _input_folder);
     ROS_INFO("Input folder: %s", _input_folder.c_str());
 
-    _nh.getParam("is_color", _is_color);
-    ROS_INFO("Is color: %d", _is_color);
+    _nh.getParam("camera_type", _camera_type);
+    ROS_INFO("Camera Type: %d", _camera_type);
+    // 0 = Gray
+    // 1 = RGB
+    // 2 = Depth
+    // 3 = Segmented
 
     // Figure out image types
-    _ros_image_format = (_is_color) ? "8UC3" : "8UC1";
-    _cv_image_format = (_is_color) ? CV_MAKETYPE(CV_8U, 3) : CV_MAKETYPE(CV_8U, 1);
-    _output_channel_name = (_is_color) ? "image_rect_color" : "grayscale";
+    switch (_camera_type){
+        case 1: // RGB
+        case 3: // Seg
+        
+            _ros_image_format = "bgr8";
+            _output_channel_name = "image_rect_color";
+        break;
+
+        case 0: // Gray
+
+            _ros_image_format = "mono8";
+            _output_channel_name = "grayscale";
+ 
+        break;
+        case 2: // Depth
+            _ros_image_format = "mono16";
+            _output_channel_name = "grayscale";
+      }
+    //if (_camera_type == 1 || _camera_type == 3){
+    
+        //_ros_image_format = "bgr8";
+  //    _output_channel_name = "image_rect_color";
+    //} else if (_camera_type == 2) {
+    //    _output_channel_name = "grayscale";
+    //}
+    //_ros_image_format = (_camera_type == 1 || _camera_type == 3) ? "bgr8" : "mono8";
+    //_cv_image_format = (_camera_type) ? CV_MAKETYPE(CV_8U, 3) : CV_MAKETYPE(CV_8U, 1);
+    //_output_channel_name = (_camera_type==1 || _camera_type==3) ? "image_rect_color" : "grayscale";
 
     std::stringstream timestamp_file_name;
     timestamp_file_name << _input_folder << "/" << _camera_name << "/nSecTimestamps.txt";
@@ -123,10 +152,26 @@ public:
     // Handle image conversions
     if (!_frame.empty()){
 
-      cv::Mat frame = cv::Mat(_frame.rows, _frame.cols, _cv_image_format);
-
-      // Convert OpenCV mat to ROS message
-      _msg = cv_bridge::CvImage(std_msgs::Header(), _ros_image_format, frame).toImageMsg();
+      switch (_camera_type){
+        case 0: {
+          // Grayscale image is actually saved as a RGB .mov file since it is more space efficient due to HEVC.
+          cv::Mat bgr[3];
+          
+          cv::split(_frame, bgr);
+          // Convert OpenCV mat to ROS message
+          _msg = cv_bridge::CvImage(std_msgs::Header(), _ros_image_format, bgr[0]).toImageMsg();
+          break;
+        }
+        
+        case 1: // RGB
+        case 3: // Seg
+          // Convert OpenCV mat to ROS message
+          _msg = cv_bridge::CvImage(std_msgs::Header(), _ros_image_format, _frame).toImageMsg();
+          break;
+   
+        //case 2: // Depth
+          // @TODO
+      }
 
       // Copy header from 
       _msg->header = msg->header;

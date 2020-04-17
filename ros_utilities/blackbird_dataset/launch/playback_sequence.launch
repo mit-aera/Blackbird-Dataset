@@ -27,7 +27,7 @@
       <param name="camera_name" value="Camera_Left_Gray"/>
       <param name="camera_frame" type="string" value="/uav/camera/left"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
-      <param name="is_color" value="0" />
+      <param name="camera_type" value="0" />
       <remap from="~/camera_trigger" to="/camera_l/camera_info"/>
     </node>
 
@@ -36,7 +36,7 @@
       
       <param name="camera_frame" type="string" value="/uav/camera/right"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
-      <param name="is_color" value="0" />
+      <param name="camera_type" value="0" />
       <remap from="~/camera_trigger" to="/camera_r/camera_info"/>
     </node>
 
@@ -44,7 +44,7 @@
       <param name="camera_name" value="Camera_Down_Gray"/>
       <param name="camera_frame" type="string" value="/uav/camera/down"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
-      <param name="is_color" value="0" />
+      <param name="camera_type" value="0" />
       <remap from="~/camera_trigger" to="/camera_d/camera_info"/>
     </node> -->
 
@@ -53,6 +53,7 @@
       <param name="camera_name" value="Camera_Left_RGB"/>
       <param name="camera_frame" type="string" value="/uav/camera/left"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <param name="camera_type" value="1" />
       <remap from="~/camera_trigger" to="/camera_l/camera_info"/>
     </node>
 
@@ -60,6 +61,7 @@
       <param name="camera_name" value="Camera_Down_RGB"/>
       <param name="camera_frame" type="string" value="/uav/camera/down"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <param name="camera_type" value="1" />
       <remap from="~/camera_trigger" to="/camera_d/camera_info"/>
     </node> -->
 
@@ -68,6 +70,7 @@
       <param name="camera_name" value="Camera_Left_Depth"/>
       <param name="camera_frame" type="string" value="/uav/camera/left"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <param name="camera_type" value="2" />
       <remap from="~/camera_trigger" to="/camera_l/camera_info"/>
     </node>
 
@@ -75,6 +78,7 @@
       <param name="camera_name" value="Camera_Down_Depth"/>
       <param name="camera_frame" type="string" value="/uav/camera/down"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <param name="camera_type" value="2" />
       <remap from="~/camera_trigger" to="/camera_d/camera_info"/>
     </node> -->
 
@@ -83,6 +87,7 @@
       <param name="camera_name" value="Camera_Left_Segmented"/>
       <param name="camera_frame" type="string" value="/uav/camera/left"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <param name="camera_type" value="3" />
       <remap from="~/camera_trigger" to="/camera_l/camera_info"/>
     </node>
 
@@ -90,6 +95,7 @@
       <param name="camera_name" value="Camera_Down_Segmented"/>
       <param name="camera_frame" type="string" value="/uav/camera/down"/> 
       <param name="input_folder" type="string" value="$(arg datasetDir)/$(arg flight)/$(arg environment)"/> 
+      <param name="camera_type" value="3" />
       <remap from="~/camera_trigger" to="/camera_d/camera_info"/>
     </node> -->
   
