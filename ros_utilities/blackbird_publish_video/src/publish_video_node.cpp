@@ -4,6 +4,15 @@
 #include <cv_bridge/cv_bridge.h>
 #include <fstream>
 
+
+// Used for camera_type ros arg. 
+enum camTypes {
+  gray=0,
+  rgb=1,
+  depth=2,
+  seg=3
+};
+
 class republishImages
 {
 
@@ -64,40 +73,24 @@ public:
 
     _nh.getParam("camera_type", _camera_type);
     ROS_INFO("Camera Type: %d", _camera_type);
-    // 0 = Gray
-    // 1 = RGB
-    // 2 = Depth
-    // 3 = Segmented
 
     // Figure out image types
     switch (_camera_type){
-        case 1: // RGB
-        case 3: // Seg
-        
-            _ros_image_format = "bgr8";
-            _output_channel_name = "image_rect_color";
-        break;
+      case camTypes::rgb: 
+      case camTypes::seg: 
+        _ros_image_format = "bgr8";
+        _output_channel_name = "image_rect_color";
+      break;
 
-        case 0: // Gray
+      case camTypes::gray: 
+        _ros_image_format = "mono8";
+        _output_channel_name = "image_rect";
+      break;
 
-            _ros_image_format = "mono8";
-            _output_channel_name = "grayscale";
- 
-        break;
-        case 2: // Depth
-            _ros_image_format = "mono16";
-            _output_channel_name = "grayscale";
-      }
-    //if (_camera_type == 1 || _camera_type == 3){
-    
-        //_ros_image_format = "bgr8";
-  //    _output_channel_name = "image_rect_color";
-    //} else if (_camera_type == 2) {
-    //    _output_channel_name = "grayscale";
-    //}
-    //_ros_image_format = (_camera_type == 1 || _camera_type == 3) ? "bgr8" : "mono8";
-    //_cv_image_format = (_camera_type) ? CV_MAKETYPE(CV_8U, 3) : CV_MAKETYPE(CV_8U, 1);
-    //_output_channel_name = (_camera_type==1 || _camera_type==3) ? "image_rect_color" : "grayscale";
+      case camTypes::depth: 
+        _ros_image_format = "mono16";
+        _output_channel_name = "image_rect";
+    }
 
     std::stringstream timestamp_file_name;
     timestamp_file_name << _input_folder << "/" << _camera_name << "/nSecTimestamps.txt";
@@ -153,8 +146,10 @@ public:
     if (!_frame.empty()){
 
       switch (_camera_type){
-        case 0: {
-          // Grayscale image is actually saved as a RGB .mov file since it is more space efficient due to HEVC.
+        
+        // Handle grayscale images differently since grayscale image is actually saved as a RGB
+        // image in .mov file since it is more space efficient due to HEVC.
+        case camTypes::gray: {
           cv::Mat bgr[3];
           
           cv::split(_frame, bgr);
@@ -163,14 +158,16 @@ public:
           break;
         }
         
-        case 1: // RGB
-        case 3: // Seg
+        // No special handling needed.
+        case camTypes::rgb:
+        case camTypes::seg:
+        // Technically, we should be remapping the Depth image to have each pixel value map to 1mm depth increments.
+        // At the moment, each pixel is (50m / 2^16) = 0.763mm
+        case camTypes::depth: 
           // Convert OpenCV mat to ROS message
           _msg = cv_bridge::CvImage(std_msgs::Header(), _ros_image_format, _frame).toImageMsg();
           break;
-   
-        //case 2: // Depth
-          // @TODO
+
       }
 
       // Copy header from 
