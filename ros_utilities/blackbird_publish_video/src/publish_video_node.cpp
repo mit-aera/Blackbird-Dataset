@@ -136,7 +136,19 @@ public:
 
     while (_timestamps.at(_counter) <= camera_info_timestamp)
     {
-      *_capPtr >> _frame;
+      switch (_camera_type) {
+      case camTypes::rgb:
+      case camTypes::gray:
+          *_capPtr >> _frame;
+           break;
+      case camTypes::seg:
+      case camTypes::depth:
+          std::stringstream filename;
+          filename << _input_folder << "/" << _camera_name << "/images/" << camera_info_timestamp << ".png";
+          _frame = cv::imread(filename.str());
+          break;
+      }
+           
       _counter++;
       if (_counter >= _timestamps.size())
         throw std::runtime_error("Requested a timestamp not in the timestamps file");
@@ -182,6 +194,9 @@ public:
       _info_pub.publish(cameraInfoMsg);
       _pub.publish(_msg);
       _lastTimestamp = msg->header.stamp.toSec();
+    }
+    else {
+      ROS_WARN("Frame was empty\n");
     }
   }
 
