@@ -11,7 +11,7 @@ import fire, wget, urllib, shutil, os
 from pathlib import Path
 
 # S3 address as URI (yes, /// is on purpose)
-serverAddress = "ijrr-blackbird-dataset.s3-accelerate.amazonaws.com/BlackbirdDatasetData"
+serverAddress = "blackbird-dataset.mit.edu/BlackbirdDatasetData"
 
 # Flight files that can be used for playback / analysis
 flightFileList = [
